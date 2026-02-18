@@ -1,9 +1,11 @@
 package com.betsudotai.shibari.domain.model
 
+import com.betsudotai.shibari.domain.value.QuestType
+
 data class Quest(
     val id: String,
     val title: String,
-    val type: String, // prohibition | routine | achievement | challenge
+    val type: QuestType,
     val description: String,
-    val threshold: Int? // Optional
+    val threshold: Int?
 )
