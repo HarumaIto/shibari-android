@@ -63,61 +63,6 @@
 **NoSQL / Denormalization (非正規化)** を基本戦略とする。
 Read性能を最大化するため、Joinが必要なデータは書き込み時にスナップショットとしてコピーする。
 
-### Collections Schema
-
-#### \`users\`
-\`\`\`json
-{
-  "uid": "string",
-  "displayName": "string",
-  "photoUrl": "string",
-  "fcmToken": "string"
-}
-\`\`\`
-
-#### \`quests\` (Master Data)
-IDは可読性のあるString IDを使用（例: \`daily_walk_1500\`）。
-\`\`\`json
-{
-  "id": "string",
-  "title": "string",
-  "type": "prohibition | routine | achievement | challenge",
-  "description": "string",
-  "threshold": number (optional)
-}
-\`\`\`
-
-#### \`timelines\` (Main Feed)
-**[重要]** \`author\` と \`quest\` 情報は参照（Ref）ではなく、**Snapshot（コピー）**を持つ。
-\`\`\`json
-{
-  "id": "uuid",
-  "userId": "string", // Reference Key
-  "questId": "string", // Reference Key
-  
-  // Denormalized Snapshots
-  "author": {
-    "displayName": "string",
-    "photoUrl": "string"
-  },
-  "quest": {
-    "title": "string",
-    "type": "string"
-  },
-
-  "mediaUrl": "string",
-  "mediaType": "image | video",
-  "comment": "string",
-  "status": "pending | approved | rejected | disputed",
-  "approvalCount": number,
-  "votes": {
-    "user_uid_A": "approve",
-    "user_uid_B": "reject"
-  },
-  "createdAt": "timestamp"
-}
-\`\`\`
-
 ## 5. Implementation Guidelines
 
 ### Coding Style
@@ -134,11 +79,3 @@ IDは可読性のあるString IDを使用（例: \`daily_walk_1500\`）。
 ### Error Handling
 * Domain/Data層での例外は \`Result<T>\` ラッパークラス、または \`kotlin.runCatching\` を用いてViewModelまで伝播させる。
 * UI層で \`Result.onFailure\` をハンドリングし、Snackbar等で表示する。
-
-## 6. Development Roadmap (Current Phase)
-**Phase 1: Foundation & Auth**
-1.  [x] Project Setup & Directory Structure
-2.  [ ] Define Domain Models (\`User\`, \`Quest\`, \`Timeline\`)
-3.  [ ] Setup Firebase (Auth, Firestore) in Data Layer
-4.  [ ] Implement Auth Repository & UseCase
-5.  [ ] Create Login Screen
