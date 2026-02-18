@@ -3,7 +3,7 @@ package com.betsudotai.shibari.domain.model
 import com.betsudotai.shibari.domain.model.timeline.AuthorSnapshot
 import com.betsudotai.shibari.domain.model.timeline.QuestSnapshot
 
-data class Timeline(
+data class TimelinePost(
     val id: String,
     val userId: String,
     val questId: String,
