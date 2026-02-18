@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.10"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -58,4 +60,14 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.functions.ktx)
+    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.analytics)
+
 }
