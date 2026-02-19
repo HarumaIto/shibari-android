@@ -1,7 +1,9 @@
 package com.betsudotai.shibari.core.di
 
-import com.betsudotai.shibari.data.datasource.remote.QuestRemoteDataSource
-import com.betsudotai.shibari.data.datasource.remote.QuestRemoteDataSourceImpl
+import com.betsudotai.shibari.data.repository.QuestRepositoryImpl
+import com.betsudotai.shibari.data.repository.TimelineRepositoryImpl
+import com.betsudotai.shibari.domain.repository.QuestRepository
+import com.betsudotai.shibari.domain.repository.TimelineRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -10,11 +12,17 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindQuestRemoteDataSource(
-        impl: QuestRemoteDataSourceImpl
-    ): QuestRemoteDataSource
+    abstract fun bindQuestRepository(
+        impl: QuestRepositoryImpl
+    ): QuestRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTimelineRepository(
+        impl: TimelineRepositoryImpl
+    ): TimelineRepository
 }
