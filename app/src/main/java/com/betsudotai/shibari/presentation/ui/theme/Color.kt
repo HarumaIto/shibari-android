@@ -1,4 +1,4 @@
-package com.betsudotai.shibari.ui.theme
+package com.betsudotai.shibari.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
