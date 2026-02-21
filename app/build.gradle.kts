@@ -71,6 +71,11 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.google.firebase.analytics)
 
+    // Google Auth
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
     // Retrofit & OkHttp
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
