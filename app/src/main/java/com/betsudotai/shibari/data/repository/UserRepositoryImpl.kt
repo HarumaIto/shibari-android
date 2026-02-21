@@ -4,6 +4,7 @@ import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
 import com.betsudotai.shibari.data.dto.UserDto
 import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.UserRepository
+import java.io.File
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -32,6 +33,21 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateParticipatingQuests(userId: String, questIds: List<String>): Result<Unit> {
         return runCatching {
             remoteDataSource.updateQuests(userId, questIds)
+        }
+    }
+
+    override suspend fun updateProfile(
+        userId: String,
+        displayName: String,
+        photoFile: File?
+    ): Result<Unit> {
+        return runCatching {
+            val photoUrl = if (photoFile != null) {
+                remoteDataSource.uploadProfileImage(userId, photoFile)
+            } else {
+                null
+            }
+            remoteDataSource.updateProfile(userId, displayName, photoUrl)
         }
     }
 }

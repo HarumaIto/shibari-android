@@ -71,6 +71,9 @@ fun MainScreen(parentNavController: NavHostController) {
             composable(Screen.Profile.route) { ProfileScreen(
                 onNavigateToEditQuests = {
                     parentNavController.navigate(Screen.QuestSelection.route)
+                },
+                onNavigateToProfileEdit = {
+                    parentNavController.navigate(Screen.ProfileEdit.route)
                 }
             ) }
         }

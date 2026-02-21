@@ -10,6 +10,7 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
     data object Auth : Screen("auth")
     data object ProfileSetup : Screen("profile_setup")
     data object QuestSelection : Screen("quest_selection")
+    data object ProfileEdit: Screen("profile_edit")
 
     data object Main : Screen("main")
 

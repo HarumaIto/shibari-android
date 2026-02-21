@@ -50,7 +50,8 @@ import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileViewModel
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onNavigateToEditQuests: () -> Unit
+    onNavigateToEditQuests: () -> Unit,
+    onNavigateToProfileEdit: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -59,7 +60,16 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("プロフィール") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("プロフィール") },
+                actions = {
+                    IconButton(onClick = onNavigateToProfileEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "プロフィール編集")
+                    }
+                }
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier

@@ -1,6 +1,7 @@
 package com.betsudotai.shibari.domain.repository
 
 import com.betsudotai.shibari.domain.model.User
+import java.io.File
 
 interface UserRepository {
     // ユーザー情報の取得
@@ -11,4 +12,6 @@ interface UserRepository {
 
     // 参加するクエストの更新
     suspend fun updateParticipatingQuests(userId: String, questIds: List<String>): Result<Unit>
+
+    suspend fun updateProfile(userId: String, displayName: String, photoFile: File?): Result<Unit>
 }
