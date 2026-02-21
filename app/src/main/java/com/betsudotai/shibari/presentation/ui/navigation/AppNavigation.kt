@@ -3,12 +3,15 @@ package com.betsudotai.shibari.presentation.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.betsudotai.shibari.presentation.ui.screens.AuthScreen
 import com.betsudotai.shibari.presentation.ui.screens.MainScreen
+import com.betsudotai.shibari.presentation.ui.screens.PostScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
 import com.betsudotai.shibari.presentation.ui.screens.QuestSelectionScreen
 import com.betsudotai.shibari.presentation.ui.screens.TimelineScreen
@@ -68,11 +71,18 @@ fun AppNavigation(
         }
 
         composable(Screen.Main.route) {
-            MainScreen()
+            MainScreen(navController)
         }
 
-        composable(Screen.Timeline.route) {
-            TimelineScreen()
+        composable(
+            route = Screen.Post.route,
+            arguments = listOf(navArgument("questId") { type = NavType.StringType })
+        ) {
+            PostScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

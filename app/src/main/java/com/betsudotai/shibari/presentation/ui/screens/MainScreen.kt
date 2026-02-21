@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.betsudotai.shibari.presentation.ui.navigation.Screen
 
 @Composable
-fun MainScreen() {
+fun MainScreen(parentNavController: NavHostController) {
     val bottomNavController = rememberNavController()
 
     val bottomTabs = listOf(
@@ -57,7 +58,11 @@ fun MainScreen() {
             startDestination = Screen.Timeline.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Quests.route) { QuestsScreen() }
+            composable(Screen.Quests.route) { QuestsScreen(
+                onNavigateToPost = { questId ->
+                    parentNavController.navigate(Screen.Post.createRoute(questId))
+                }
+            ) }
             composable(Screen.Timeline.route) { TimelineScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
         }
