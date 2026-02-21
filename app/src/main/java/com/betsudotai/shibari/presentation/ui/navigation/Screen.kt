@@ -1,7 +1,17 @@
 package com.betsudotai.shibari.presentation.ui.navigation
 
-sealed class Screen(val route: String) {
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class Screen(val route: String, val title: String? = null, val icon: ImageVector? = null) {
     data object Auth : Screen("auth")
     data object ProfileSetup : Screen("profile_setup")
-    data object Timeline : Screen("timeline")
+    data object Main : Screen("main")
+
+    data object Quests: Screen("quests", "クエスト", Icons.Default.List)
+    data object Timeline: Screen("timeline", "タイムライン", Icons.Default.Home)
+    data object  Profile: Screen("profile", "プロフィール", Icons.Default.Person)
 }

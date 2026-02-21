@@ -62,7 +62,7 @@ class AuthViewModel @Inject constructor(
                 // ログイン成功時、Firestoreにユーザーデータがあるかチェック
                 val userProfile = userRepository.getUser(uid)
                 if (userProfile != null) {
-                    _eventFlow.emit(AuthEvent.NavigateToTimeline)
+                    _eventFlow.emit(AuthEvent.NavigateToMain)
                 } else {
                     // AuthはあるがFirestoreにデータがない場合（途中で落ちた時など）
                     _eventFlow.emit(AuthEvent.NavigateToProfileSetup)

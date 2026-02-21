@@ -60,7 +60,7 @@ class ProfileSetupViewModel @Inject constructor(
 
             val result = userRepository.createUser(newUser)
             result.onSuccess {
-                _eventFlow.emit(ProfileSetupEvent.NavigateToTimeline)
+                _eventFlow.emit(ProfileSetupEvent.NavigateToMain)
             }.onFailure {
                 _eventFlow.emit(ProfileSetupEvent.ShowError("保存に失敗しました"))
             }

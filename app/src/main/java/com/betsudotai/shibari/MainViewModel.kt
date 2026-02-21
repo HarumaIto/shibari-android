@@ -18,7 +18,7 @@ class MainViewModel @Inject constructor(
 
     val startDestination: StateFlow<String?> = authRepository.isUserLoggedIn
         .map { isLoggedIn ->
-            if (isLoggedIn) Screen.Timeline.route else Screen.Auth.route
+            if (isLoggedIn) Screen.Main.route else Screen.Auth.route
         }
         .stateIn(
             scope = viewModelScope,

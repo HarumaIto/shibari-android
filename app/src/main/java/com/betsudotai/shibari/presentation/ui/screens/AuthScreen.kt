@@ -15,7 +15,7 @@ import com.betsudotai.shibari.presentation.viewmodel.auth.AuthViewModel
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
-    onNavigateToTimeline: () -> Unit,
+    onNavigateToMain: () -> Unit,
     onNavigateToProfileSetup: () -> Unit
 ) {
     val email by viewModel.email.collectAsStateWithLifecycle()
@@ -27,7 +27,7 @@ fun AuthScreen(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
-                is AuthEvent.NavigateToTimeline -> onNavigateToTimeline()
+                is AuthEvent.NavigateToMain -> onNavigateToMain()
                 is AuthEvent.NavigateToProfileSetup -> onNavigateToProfileSetup()
                 is AuthEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }

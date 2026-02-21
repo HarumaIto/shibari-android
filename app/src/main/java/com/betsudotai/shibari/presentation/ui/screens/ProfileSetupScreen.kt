@@ -14,7 +14,7 @@ import com.betsudotai.shibari.presentation.viewmodel.profileSetup.ProfileSetupVi
 @Composable
 fun ProfileSetupScreen(
     viewModel: ProfileSetupViewModel = hiltViewModel(),
-    onNavigateToTimeline: () -> Unit
+    onNavigateToMain: () -> Unit
 ) {
     val displayName by viewModel.displayName.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -23,7 +23,7 @@ fun ProfileSetupScreen(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
-                is ProfileSetupEvent.NavigateToTimeline -> onNavigateToTimeline()
+                is ProfileSetupEvent.NavigateToMain -> onNavigateToMain()
                 is ProfileSetupEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
