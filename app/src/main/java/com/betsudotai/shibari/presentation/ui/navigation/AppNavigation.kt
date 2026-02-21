@@ -6,9 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.betsudotai.shibari.presentation.ui.screens.AuthScreen
 import com.betsudotai.shibari.presentation.ui.screens.MainScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
+import com.betsudotai.shibari.presentation.ui.screens.QuestSelectionScreen
 import com.betsudotai.shibari.presentation.ui.screens.TimelineScreen
 
 @Composable
@@ -48,8 +50,18 @@ fun AppNavigation(
         composable(Screen.ProfileSetup.route) {
             ProfileSetupScreen(
                 onNavigateToMain = {
-                    navController.navigate(Screen.Main.route) {
+                    navController.navigate(Screen.QuestSelection.route) {
                         popUpTo(Screen.ProfileSetup.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.QuestSelection.route) {
+            QuestSelectionScreen(
+                onNavigateToMain = {
+                    navController.navigate(Screen.Main.route) {
+                        popUpTo(Screen.QuestSelection.route) { inclusive = true }
                     }
                 }
             )
