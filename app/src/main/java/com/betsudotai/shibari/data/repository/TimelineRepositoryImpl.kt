@@ -2,6 +2,7 @@ package com.betsudotai.shibari.data.repository
 
 import com.betsudotai.shibari.data.datasource.remote.QuestRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.TimelineRemoteDataSource
+import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
 import com.betsudotai.shibari.data.dto.TimelinePostDto
 import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.VoteType
@@ -15,8 +16,8 @@ import javax.inject.Inject
 
 class TimelineRepositoryImpl @Inject constructor(
     private val timelineDataSource: TimelineRemoteDataSource,
-    private val questDataSource: QuestRemoteDataSource
-    // private val userDataSource: UserRemoteDataSource // 後で作る
+    private val questDataSource: QuestRemoteDataSource,
+    private val userDataSource: UserRemoteDataSource
 ) : TimelineRepository {
 
     override fun getTimelineStream(): Flow<List<TimelinePost>> {
@@ -44,10 +45,11 @@ class TimelineRepositoryImpl @Inject constructor(
                 ?: throw IllegalStateException("Quest not found")
 
             // 3. ユーザー情報のスナップショットを取得
-            // (まだUserDataSourceがないので仮実装。本来はfetchUser(userId)する)
+            val userDto = userDataSource.getUser(userId)
+                ?: throw IllegalStateException("User not found")
             val authorMap = mapOf(
-                "displayName" to "仮ユーザー", // TODO: UserDataSourceから取得
-                "photoUrl" to null
+                "displayName" to userDto.displayName,
+                "photoUrl" to userDto.photoUrl
             )
 
             // 4. DTOを作成
