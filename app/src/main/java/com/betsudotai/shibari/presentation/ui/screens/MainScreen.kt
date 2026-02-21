@@ -64,7 +64,11 @@ fun MainScreen(parentNavController: NavHostController) {
                 }
             ) }
             composable(Screen.Timeline.route) { TimelineScreen() }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            composable(Screen.Profile.route) { ProfileScreen(
+                onNavigateToEditQuests = {
+                    parentNavController.navigate(Screen.QuestSelection.route)
+                }
+            ) }
         }
     }
 }
