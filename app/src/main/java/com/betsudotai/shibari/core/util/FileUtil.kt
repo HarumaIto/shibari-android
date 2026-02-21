@@ -9,7 +9,11 @@ object FileUtil {
     fun createTempFileFromUri(context: Context, uri: Uri): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-            val tempFile = File(context.cacheDir, "upload_temp_${System.currentTimeMillis()}.jpg")
+            val mimeType = context.contentResolver.getType(uri)
+
+            val ext = if (mimeType?.startsWith("video/") == true) ".mp4" else ".jpg"
+
+            val tempFile = File(context.cacheDir, "upload_temp_${System.currentTimeMillis()}$ext")
             val outputStream = FileOutputStream(tempFile)
 
             inputStream.copyTo(outputStream)

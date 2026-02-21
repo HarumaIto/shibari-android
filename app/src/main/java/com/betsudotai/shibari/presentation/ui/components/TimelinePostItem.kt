@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.betsudotai.shibari.domain.model.TimelinePost
+import com.betsudotai.shibari.domain.value.MediaType
 import com.betsudotai.shibari.domain.value.VoteType
 
 @Composable
@@ -77,15 +78,25 @@ fun TimelinePostItem(
             }
 
             // --- Media: メイン画像 ---
-            AsyncImage(
-                model = post.mediaUrl,
-                contentDescription = "Evidence",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f) // 正方形 (Instagram風)
-                    .background(Color.Black),
-                contentScale = ContentScale.Crop
-            )
+            if (post.mediaType == MediaType.VIDEO) {
+                VideoPlayer(
+                    videoUri = post.mediaUrl!!,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f) // 正方形
+                        .background(Color.Black)
+                )
+            } else {
+                AsyncImage(
+                    model = post.mediaUrl,
+                    contentDescription = "Evidence",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .background(Color.Black),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             // --- Footer: コメント & アクション ---
             Column(modifier = Modifier.padding(12.dp)) {

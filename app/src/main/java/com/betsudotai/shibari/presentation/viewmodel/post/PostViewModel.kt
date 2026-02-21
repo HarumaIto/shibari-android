@@ -68,12 +68,15 @@ class PostViewModel @Inject constructor(
                 return@launch
             }
 
+            val mimeType = context.contentResolver.getType(uri)
+            val typeString = if (mimeType?.startsWith("video/") == true) "video" else "image"
+
             // Repositoryの投稿処理を呼び出す
             val result = timelineRepository.createPost(
                 userId = userId,
                 questId = questId,
                 mediaFile = imageFile,
-                mediaType = "image", // 今回は画像固定
+                mediaType = typeString,
                 comment = _comment.value
             )
 

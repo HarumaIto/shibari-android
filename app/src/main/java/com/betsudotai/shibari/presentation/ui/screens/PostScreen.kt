@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.betsudotai.shibari.presentation.ui.components.VideoPlayer
 import com.betsudotai.shibari.presentation.viewmodel.post.PostEvent
 import com.betsudotai.shibari.presentation.viewmodel.post.PostViewModel
 
@@ -40,6 +41,9 @@ fun PostScreen(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> viewModel.onImageSelected(uri) }
     )
+
+    val mimeType = selectedImageUri?.let { context.contentResolver.getType(it) }
+    val isVideo = mimeType?.startsWith("video/") == true
 
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
@@ -73,18 +77,27 @@ fun PostScreen(
                 contentAlignment = Alignment.Center
             ) {
                 if (selectedImageUri != null) {
-                    AsyncImage(
-                        model = selectedImageUri,
-                        contentDescription = "Selected Image",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                    if (isVideo) {
+                        // ★動画プレビュー
+                        VideoPlayer(
+                            videoUri = selectedImageUri.toString(),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        // ★画像プレビュー
+                        AsyncImage(
+                            model = selectedImageUri,
+                            contentDescription = "Selected Image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 } else {
                     IconButton(
                         onClick = {
                             // 画像のみを選択可能にする
                             photoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                             )
                         },
                         modifier = Modifier.size(64.dp)
