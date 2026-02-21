@@ -63,7 +63,11 @@ fun MainScreen(parentNavController: NavHostController) {
                     parentNavController.navigate(Screen.Post.createRoute(questId))
                 }
             ) }
-            composable(Screen.Timeline.route) { TimelineScreen() }
+            composable(Screen.Timeline.route) { TimelineScreen(
+                onNavigateToComment = { postId ->
+                    parentNavController.navigate(Screen.Comment.createRoute(postId))
+                }
+            ) }
             composable(Screen.Profile.route) { ProfileScreen(
                 onNavigateToEditQuests = {
                     parentNavController.navigate(Screen.QuestSelection.route)

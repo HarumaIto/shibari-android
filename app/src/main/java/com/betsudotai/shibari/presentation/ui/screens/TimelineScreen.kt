@@ -17,7 +17,8 @@ import com.betsudotai.shibari.presentation.viewmodel.timeline.TimelineViewModel
 
 @Composable
 fun TimelineScreen(
-    viewModel: TimelineViewModel = hiltViewModel()
+    viewModel: TimelineViewModel = hiltViewModel(),
+    onNavigateToComment: (String) -> Unit
 ) {
     // ViewModelの状態を監視
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -46,7 +47,10 @@ fun TimelineScreen(
                         items(state.posts.size) { index ->
                             TimelinePostItem(
                                 post = state.posts[index],
-                                onVote = { id, type -> viewModel.vote(id, type) }
+                                onVote = { id, type -> viewModel.vote(id, type) },
+                                onCommentClick = { id ->
+                                    onNavigateToComment(id)
+                                }
                             )
                         }
                     }

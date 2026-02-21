@@ -1,5 +1,6 @@
 package com.betsudotai.shibari.domain.repository
 
+import com.betsudotai.shibari.domain.model.Comment
 import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.VoteType
 import kotlinx.coroutines.flow.Flow
@@ -24,4 +25,8 @@ interface TimelineRepository {
         userId: String,
         vote: VoteType
     ): Result<Unit>
+
+    fun getCommentsStream(postId: String): Flow<List<Comment>>
+
+    suspend fun addComment(postId: String, userId: String, text: String): Result<Unit>
 }

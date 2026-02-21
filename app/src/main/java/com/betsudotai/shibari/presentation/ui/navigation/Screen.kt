@@ -17,6 +17,10 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
         fun createRoute(questId: String) = "post/$questId"
     }
 
+    data object Comment: Screen("comment/{postId}") {
+        fun createRoute(postId: String) = "comment/$postId"
+    }
+
     data object Quests: Screen("quests", "クエスト", Icons.Default.List)
     data object Timeline: Screen("timeline", "タイムライン", Icons.Default.Home)
     data object  Profile: Screen("profile", "プロフィール", Icons.Default.Person)

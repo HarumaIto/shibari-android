@@ -3,7 +3,9 @@ package com.betsudotai.shibari.data.repository
 import com.betsudotai.shibari.data.datasource.remote.QuestRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.TimelineRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
+import com.betsudotai.shibari.data.dto.CommentDto
 import com.betsudotai.shibari.data.dto.TimelinePostDto
+import com.betsudotai.shibari.domain.model.Comment
 import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.VoteType
 import com.betsudotai.shibari.domain.repository.TimelineRepository
@@ -76,6 +78,35 @@ class TimelineRepositoryImpl @Inject constructor(
     override suspend fun votePost(postId: String, userId: String, vote: VoteType): Result<Unit> {
         return runCatching {
             timelineDataSource.updateVote(postId, userId, vote.name)
+        }
+    }
+
+    override fun getCommentsStream(postId: String): Flow<List<Comment>> {
+        return timelineDataSource.getCommentsStream(postId).map { list ->
+            list.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun addComment(postId: String, userId: String, text: String): Result<Unit> {
+        return runCatching {
+            // 現在のユーザー情報を取得してスナップショットを作る
+            val userDto = userDataSource.getUser(userId)
+                ?: throw IllegalStateException("User not found")
+
+            val authorMap = mapOf(
+                "displayName" to userDto.displayName,
+                "photoUrl" to userDto.photoUrl
+            )
+
+            val newComment = CommentDto(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                author = authorMap,
+                text = text,
+                createdAt = Timestamp.now()
+            )
+
+            timelineDataSource.addComment(postId, newComment)
         }
     }
 }

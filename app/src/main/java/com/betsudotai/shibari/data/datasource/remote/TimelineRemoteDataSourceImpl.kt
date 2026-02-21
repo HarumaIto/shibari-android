@@ -1,6 +1,7 @@
 package com.betsudotai.shibari.data.datasource.remote
 
 import android.net.Uri
+import com.betsudotai.shibari.data.dto.CommentDto
 import com.betsudotai.shibari.data.dto.TimelinePostDto
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -79,5 +80,27 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
                 "status" to newStatus
             ))
         }.await()
+    }
+
+    override fun getCommentsStream(postId: String): Flow<List<CommentDto>> = callbackFlow {
+        val collection = firestore.collection("timelines").document(postId).collection("comments")
+            .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.ASCENDING) // 古い順（上から下へ表示）
+
+        val registration = collection.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                val comments = snapshot.documents.mapNotNull { it.toObject(CommentDto::class.java) }
+                trySend(comments)
+            }
+        }
+        awaitClose { registration.remove() }
+    }
+
+    override suspend fun addComment(postId: String, commentDto: CommentDto) {
+        firestore.collection("timelines").document(postId)
+            .collection("comments").document(commentDto.id).set(commentDto).await()
     }
 }

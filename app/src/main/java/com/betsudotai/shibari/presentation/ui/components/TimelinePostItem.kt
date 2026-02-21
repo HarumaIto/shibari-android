@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -23,7 +24,8 @@ import com.betsudotai.shibari.domain.value.VoteType
 @Composable
 fun TimelinePostItem(
     post: TimelinePost,
-    onVote: (String, VoteType) -> Unit
+    onVote: (String, VoteType) -> Unit,
+    onCommentClick: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -95,24 +97,28 @@ fun TimelinePostItem(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // 承認カウントとボタン
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "承認: ${post.approvalCount}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+                    // ★追加：コメントアイコンボタン
+                    IconButton(onClick = { onCommentClick(post.id) }) {
+                        Icon(Icons.Default.ChatBubbleOutline, contentDescription = "コメント")
+                    }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        // 否認ボタン
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "承認: ${post.approvalCount}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                         IconButton(onClick = { onVote(post.id, VoteType.REJECT) }) {
-                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Reject", tint = Color.Gray)
+                            Icon(Icons.Default.ThumbDown, contentDescription = "Reject", tint = Color.Gray)
                         }
-                        // 承認ボタン
                         FilledTonalButton(onClick = { onVote(post.id, VoteType.APPROVE) }) {
                             Icon(Icons.Default.ThumbUp, contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
