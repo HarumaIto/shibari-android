@@ -14,4 +14,6 @@ interface UserRepository {
     suspend fun updateParticipatingQuests(userId: String, questIds: List<String>): Result<Unit>
 
     suspend fun updateProfile(userId: String, displayName: String, photoFile: File?): Result<Unit>
+
+    suspend fun updateFcmToken(userId: String, token: String): Result<Unit>
 }

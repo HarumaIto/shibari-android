@@ -50,4 +50,10 @@ class UserRepositoryImpl @Inject constructor(
             remoteDataSource.updateProfile(userId, displayName, photoUrl)
         }
     }
+
+    override suspend fun updateFcmToken(userId: String, token: String): Result<Unit> {
+        return runCatching {
+            remoteDataSource.updateFcmToken(userId, token)
+        }
+    }
 }

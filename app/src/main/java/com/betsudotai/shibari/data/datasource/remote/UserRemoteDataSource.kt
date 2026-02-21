@@ -9,4 +9,5 @@ interface UserRemoteDataSource {
     suspend fun updateQuests(userId: String, questIds: List<String>)
     suspend fun updateProfile(userId: String, displayName: String, photoUrl: String?)
     suspend fun uploadProfileImage(userId: String, file: File): String
+    suspend fun updateFcmToken(userId: String, token: String)
 }

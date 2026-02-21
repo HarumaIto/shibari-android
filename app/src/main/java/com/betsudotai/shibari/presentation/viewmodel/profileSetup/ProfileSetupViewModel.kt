@@ -49,12 +49,14 @@ class ProfileSetupViewModel @Inject constructor(
                 return@launch
             }
 
+            val token = authRepository.getFCMToken()
+
             // 新規ユーザーモデルの作成
             val newUser = User(
                 uid = uid,
                 displayName = _displayName.value,
-                photoUrl = null, // V1.1では後回し（デフォルトアイコン）でも可
-                fcmToken = null,
+                photoUrl = null,
+                fcmToken = token,
                 participatingQuestIds = emptyList() // 次の「縛り選択画面」で追加する
             )
 

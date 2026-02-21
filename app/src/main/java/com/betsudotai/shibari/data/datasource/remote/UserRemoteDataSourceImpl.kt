@@ -47,4 +47,9 @@ class UserRemoteDataSourceImpl @Inject constructor(
         ref.putFile(uri).await()
         return ref.downloadUrl.await().toString()
     }
+
+    override suspend fun updateFcmToken(userId: String, token: String) {
+        firestore.collection("users").document(userId)
+            .update("fcmToken", token).await()
+    }
 }
