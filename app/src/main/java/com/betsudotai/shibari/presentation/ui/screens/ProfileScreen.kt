@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.betsudotai.shibari.presentation.ui.components.common.KeyValueCard
 import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileUiState
 import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileViewModel
 
@@ -62,10 +64,14 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("プロフィール") },
+                title = { Text(
+                    text = "プロフィール",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                    ) },
                 actions = {
                     IconButton(onClick = onNavigateToProfileEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "プロフィール編集")
+                        Icon(Icons.Default.List, contentDescription = "プロフィール編集")
                     }
                 }
             )
@@ -128,7 +134,23 @@ fun ProfileScreen(
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            Spacer(modifier = Modifier.height(48.dp))
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                KeyValueCard(
+                                    modifier = Modifier.weight(1f),
+                                    key = "承認数",
+                                    value = "142"
+                                )
+                                KeyValueCard(
+                                    modifier = Modifier.weight(1f),
+                                    key = "現在の連続日数",
+                                    value = "12日"
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(100.dp))
                         }
 
                         // --- 2. 参加中の縛りセクション ---
