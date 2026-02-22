@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +24,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<ProfileEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     fun loadProfile() {
         viewModelScope.launch {
@@ -53,6 +59,31 @@ class ProfileViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             authRepository.signOut()
+        }
+    }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            _uiState.value = ProfileUiState.Loading
+            val uid = authRepository.getCurrentUserId()
+
+            if (uid != null) {
+                userRepository.anonymizeUser(uid)
+
+                val result = authRepository.deleteAccount()
+                result.onSuccess {
+                    _eventFlow.emit(ProfileEvent.NavigateToLogin)
+                }.onFailure { error ->
+                    if (error is FirebaseAuthRecentLoginRequiredException) {
+                        authRepository.signOut()
+                        _eventFlow.emit(ProfileEvent.ShowError("セキュリティのため、一度再ログインしてから退会処理を行ってください。"))
+                        _eventFlow.emit(ProfileEvent.NavigateToLogin)
+                    } else {
+                        _eventFlow.emit(ProfileEvent.ShowError("退会処理に失敗しました: ${error.localizedMessage}"))
+                        loadProfile()
+                    }
+                }
+            }
         }
     }
 }

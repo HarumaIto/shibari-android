@@ -17,4 +17,5 @@ interface AuthRepository {
     suspend fun signUp(email: String, password: String): Result<String> // 成功時にUIDを返す
 
     suspend fun signOut()
+    suspend fun deleteAccount(): Result<Unit>
 }

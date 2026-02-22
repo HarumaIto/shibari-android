@@ -6,6 +6,7 @@ import java.io.File
 interface UserRemoteDataSource {
     suspend fun getUser(userId: String): UserDto?
     suspend fun createUser(userDto: UserDto)
+    suspend fun updateUser(userId: String, data: Map<String, Any?>)
     suspend fun updateQuests(userId: String, questIds: List<String>)
     suspend fun updateProfile(userId: String, displayName: String, photoUrl: String?)
     suspend fun uploadProfileImage(userId: String, file: File): String

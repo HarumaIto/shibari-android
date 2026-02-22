@@ -62,4 +62,15 @@ class UserRepositoryImpl @Inject constructor(
             remoteDataSource.updateUserGroupId(userId, groupId)
         }
     }
+
+    override suspend fun anonymizeUser(userId: String): Result<Unit> {
+        return runCatching {
+            val updates = mapOf<String, Any?>(
+                "displayName" to "退会済みユーザー",
+                "photoUrl" to null,
+                "fcmToken" to null
+            )
+            remoteDataSource.updateUser(userId, updates)
+        }
+    }
 }

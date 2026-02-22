@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,11 +30,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +51,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.betsudotai.shibari.presentation.ui.components.common.KeyValueCard
+import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileEvent
 import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileUiState
 import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileViewModel
 
@@ -52,13 +59,46 @@ import com.betsudotai.shibari.presentation.viewmodel.profile.ProfileViewModel
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
+    onNavigateToLogin: () -> Unit,
     onNavigateToEditQuests: () -> Unit,
     onNavigateToProfileEdit: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showDeleteDialog = remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is ProfileEvent.NavigateToLogin -> onNavigateToLogin()
+                is ProfileEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    if (showDeleteDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog.value = false },
+            title = { Text("アカウントの削除") },
+            text = { Text("本当に退会しますか？この操作は取り消せません。過去の投稿は「退会済みユーザー」としてグループに残ります。") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog.value = false
+                        viewModel.deleteAccount()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("退会する", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog.value = false }) {
+                    Text("キャンセル")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -75,7 +115,8 @@ fun ProfileScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -200,7 +241,6 @@ fun ProfileScreen(
 
                         item { Spacer(modifier = Modifier.height(48.dp)) }
 
-                        // --- 3. ログアウトボタン ---
                         item {
                             OutlinedButton(
                                 onClick = { viewModel.signOut() },
@@ -209,6 +249,16 @@ fun ProfileScreen(
                             ) {
                                 Text("ログアウト")
                             }
+                        }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+                        item {
+                            TextButton(
+                                onClick = { showDeleteDialog.value = true },
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                            ) {
+                                Text("アカウントを削除して退会する")
+                            }
+                            Spacer(modifier = Modifier.height(32.dp))
                         }
                     }
                 }

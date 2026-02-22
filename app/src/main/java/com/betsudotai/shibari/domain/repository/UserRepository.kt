@@ -17,4 +17,6 @@ interface UserRepository {
 
     suspend fun updateFcmToken(userId: String, token: String): Result<Unit>
     suspend fun updateUserGroupId(userId: String, groupId: String?): Result<Unit>
+
+    suspend fun anonymizeUser(userId: String): Result<Unit>
 }

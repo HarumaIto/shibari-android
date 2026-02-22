@@ -14,17 +14,23 @@ class UserRemoteDataSourceImpl @Inject constructor(
     private val storage: FirebaseStorage
 ) : UserRemoteDataSource {
 
+    private val usersCollection = firestore.collection("users")
+
     override suspend fun getUser(userId: String): UserDto? {
-        val doc = firestore.collection("users").document(userId).get().await()
+        val doc = usersCollection.document(userId).get().await()
         return doc.toObject(UserDto::class.java)
     }
 
     override suspend fun createUser(userDto: UserDto) {
-        firestore.collection("users").document(userDto.id).set(userDto).await()
+        usersCollection.document(userDto.id).set(userDto).await()
+    }
+
+    override suspend fun updateUser(userId: String, data: Map<String, Any?>) {
+        usersCollection.document(userId).set(data).await()
     }
 
     override suspend fun updateQuests(userId: String, questIds: List<String>) {
-        firestore.collection("users").document(userId)
+        usersCollection.document(userId)
             .update("participatingQuestIds", questIds).await()
     }
 
@@ -35,7 +41,7 @@ class UserRemoteDataSourceImpl @Inject constructor(
         if (photoUrl != null) {
             updates["photoUrl"] = photoUrl
         }
-        firestore.collection("users").document(userId).update(updates).await()
+        usersCollection.document(userId).update(updates).await()
     }
 
     override suspend fun uploadProfileImage(userId: String, file: File): String {
@@ -49,12 +55,12 @@ class UserRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateFcmToken(userId: String, token: String) {
-        firestore.collection("users").document(userId)
+        usersCollection.document(userId)
             .update("fcmToken", token).await()
     }
 
     override suspend fun updateUserGroupId(userId: String, groupId: String?) {
-        firestore.collection("users").document(userId)
+        usersCollection.document(userId)
             .update("groupId", groupId).await()
     }
 }
