@@ -5,5 +5,6 @@ data class User(
     val displayName: String,
     val photoUrl: String?,
     val fcmToken: String?,
-    val participatingQuestIds: List<String>
+    val participatingQuestIds: List<String>,
+    val groupId: String?
 )

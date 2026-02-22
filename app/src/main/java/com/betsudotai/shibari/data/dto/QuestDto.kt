@@ -7,6 +7,7 @@ import com.google.firebase.firestore.PropertyName
 // Firestoreのドキュメント構造と完全一致させる
 data class QuestDto(
     @PropertyName("id") val id: String = "",
+    @PropertyName("groupId") val groupId: String = "", // Add groupId here
     @PropertyName("title") val title: String = "",
     @PropertyName("type") val type: String = "", // EnumではなくStringで保存
     @PropertyName("description") val description: String = "",
@@ -16,6 +17,7 @@ data class QuestDto(
     fun toDomain(): Quest {
         return Quest(
             id = id,
+            groupId = groupId, // Map groupId here
             title = title,
             type = try {
                 QuestType.valueOf(type)

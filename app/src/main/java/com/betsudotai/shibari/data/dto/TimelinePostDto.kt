@@ -16,6 +16,7 @@ data class TimelinePostDto(
     @PropertyName("id") val id: String = "",
     @PropertyName("userId") val userId: String = "",
     @PropertyName("questId") val questId: String = "",
+    @PropertyName("groupId") val groupId: String = "", // Add groupId here
 
     // スナップショット (Mapとして保存される)
     @PropertyName("author") val author: Map<String, String?> = emptyMap(),
@@ -39,6 +40,7 @@ data class TimelinePostDto(
             id = id,
             userId = userId,
             questId = questId,
+            groupId = groupId, // Map groupId here
             author = AuthorSnapshot(
                 displayName = author["displayName"] ?: "Unknown",
                 photoUrl = author["photoUrl"]

@@ -11,6 +11,7 @@ data class TimelinePost(
     val id: String,
     val userId: String,
     val questId: String,
+    val groupId: String, // Add groupId here
     val author: AuthorSnapshot,
     val quest: QuestSnapshot,
     val mediaUrl: String?,
