@@ -57,12 +57,13 @@ class ProfileSetupViewModel @Inject constructor(
                 displayName = _displayName.value,
                 photoUrl = null,
                 fcmToken = token,
-                participatingQuestIds = emptyList() // 次の「縛り選択画面」で追加する
+                participatingQuestIds = emptyList(),
+                groupId = null
             )
 
             val result = userRepository.createUser(newUser)
             result.onSuccess {
-                _eventFlow.emit(ProfileSetupEvent.NavigateToMain)
+                _eventFlow.emit(ProfileSetupEvent.NavigateToGroupSelection)
             }.onFailure {
                 _eventFlow.emit(ProfileSetupEvent.ShowError("保存に失敗しました"))
             }

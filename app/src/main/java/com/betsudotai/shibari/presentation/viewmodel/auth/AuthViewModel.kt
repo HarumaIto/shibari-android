@@ -64,7 +64,6 @@ class AuthViewModel @Inject constructor(
                 if (userProfile != null) {
                     _eventFlow.emit(AuthEvent.NavigateToMain)
                 } else {
-                    // AuthはあるがFirestoreにデータがない場合（途中で落ちた時など）
                     _eventFlow.emit(AuthEvent.NavigateToProfileSetup)
                 }
             }.onFailure { e ->

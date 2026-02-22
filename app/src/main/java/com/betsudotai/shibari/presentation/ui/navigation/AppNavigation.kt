@@ -15,6 +15,7 @@ import com.betsudotai.shibari.presentation.ui.screens.PostScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileEditScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
 import com.betsudotai.shibari.presentation.ui.screens.QuestSelectionScreen
+import com.betsudotai.shibari.presentation.ui.screens.GroupSelectionScreen
 
 @Composable
 fun AppNavigation(
@@ -36,7 +37,6 @@ fun AppNavigation(
         composable(Screen.Auth.route) {
             AuthScreen(
                 onNavigateToMain = {
-                    // メインへ移動し、戻るボタンでAuth画面に戻らないように履歴を消す
                     navController.navigate(Screen.Main.route) {
                         popUpTo(Screen.Auth.route) { inclusive = true }
                     }
@@ -52,8 +52,8 @@ fun AppNavigation(
 
         composable(Screen.ProfileSetup.route) {
             ProfileSetupScreen(
-                onNavigateToMain = {
-                    navController.navigate(Screen.QuestSelection.route) {
+                onNavigateToGroupSelection = {
+                    navController.navigate(Screen.GroupSelection.route) {
                         popUpTo(Screen.ProfileSetup.route) { inclusive = true }
                     }
                 }
@@ -71,6 +71,16 @@ fun AppNavigation(
                 onNavigateToMain = {
                     navController.navigate(Screen.Main.route) {
                         popUpTo(Screen.QuestSelection.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.GroupSelection.route) {
+            GroupSelectionScreen(
+                onNavigateToQuestSelection = {
+                    navController.navigate(Screen.QuestSelection.route) {
+                        popUpTo(Screen.GroupSelection.route) { inclusive = true }
                     }
                 }
             )
