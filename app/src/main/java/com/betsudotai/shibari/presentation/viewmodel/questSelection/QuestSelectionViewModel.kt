@@ -43,16 +43,16 @@ class QuestSelectionViewModel @Inject constructor(
     private fun loadQuests() {
         viewModelScope.launch {
             _isLoading.value = true
-            // 全クエスト一覧を取得
-            val allQuests = questRepository.getAllQuests()
-            _quests.value = allQuests
-
             // 現在のユーザー情報を取得し、すでに選んでいるクエストがあればチェックを入れる
             val uid = authRepository.getCurrentUserId()
             if (uid != null) {
                 val user = userRepository.getUser(uid)
                 if (user != null) {
                     _selectedQuestIds.value = user.participatingQuestIds.toSet()
+
+                    // 全クエスト一覧を取得
+                    val allQuests = questRepository.getAllQuests(user.groupId!!)
+                    _quests.value = allQuests
                 }
             }
             _isLoading.value = false

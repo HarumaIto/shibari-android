@@ -8,8 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.betsudotai.shibari.core.util.FileUtil
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.TimelineRepository
+import com.betsudotai.shibari.domain.repository.UserRepository // Import UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject // Correct import for Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 class PostViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val timelineRepository: TimelineRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository // Inject UserRepository
 ) : ViewModel() {
 
     // 遷移元の画面から "questId" を受け取る
@@ -60,6 +62,15 @@ class PostViewModel @Inject constructor(
                 return@launch
             }
 
+            val currentUser = userRepository.getUser(userId) // Get current user to access groupId
+            val groupId = currentUser?.groupId
+
+            if (groupId == null) {
+                _eventFlow.emit(PostEvent.ShowError("グループに所属していません。"))
+                _isLoading.value = false
+                return@launch
+            }
+
             // Uri から File に変換（ここで画像なら圧縮される）
             val mediaFile = FileUtil.createTempFileFromUri(context, uri)
             if (mediaFile == null) {
@@ -89,6 +100,7 @@ class PostViewModel @Inject constructor(
             val result = timelineRepository.createPost(
                 userId = userId,
                 questId = questId,
+                groupId = groupId, // Pass groupId
                 mediaFile = mediaFile,
                 mediaType = typeString,
                 comment = _comment.value

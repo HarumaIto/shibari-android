@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,6 +43,12 @@ class QuestsViewModel @Inject constructor(
                     return@launch
                 }
 
+                val groupId = user.groupId
+                if (groupId == null) {
+                    _uiState.value = QuestsUiState.Error("グループに所属していません")
+                    return@launch
+                }
+
                 val questIds = user.participatingQuestIds
                 if (questIds.isEmpty()) {
                     // 参加中の縛りがない場合
@@ -51,7 +58,7 @@ class QuestsViewModel @Inject constructor(
 
                 // 全クエストを取得し、自分が参加しているものだけをフィルタリングする
                 // （※データ量が増えてきたらFirestore側でin句を使って取得する設計に変更しますが、現状はこれで十分高速です）
-                val allQuests = questRepository.getAllQuests()
+                val allQuests = questRepository.getAllQuests(groupId) // Pass groupId
                 val myQuests = allQuests.filter { questIds.contains(it.id) }
 
                 _uiState.value = QuestsUiState.Success(myQuests)
