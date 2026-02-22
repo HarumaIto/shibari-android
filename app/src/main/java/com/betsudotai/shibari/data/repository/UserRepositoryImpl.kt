@@ -56,4 +56,10 @@ class UserRepositoryImpl @Inject constructor(
             remoteDataSource.updateFcmToken(userId, token)
         }
     }
+
+    override suspend fun updateUserGroupId(userId: String, groupId: String?): Result<Unit> {
+        return runCatching {
+            remoteDataSource.updateUserGroupId(userId, groupId)
+        }
+    }
 }
