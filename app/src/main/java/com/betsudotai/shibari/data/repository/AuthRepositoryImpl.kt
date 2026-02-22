@@ -1,5 +1,6 @@
 package com.betsudotai.shibari.data.repository
 
+import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging

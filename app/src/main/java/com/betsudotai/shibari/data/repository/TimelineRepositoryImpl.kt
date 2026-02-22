@@ -22,9 +22,9 @@ class TimelineRepositoryImpl @Inject constructor(
     private val userDataSource: UserRemoteDataSource
 ) : TimelineRepository {
 
-    override fun getTimelineStream(): Flow<List<TimelinePost>> {
+    override fun getTimelineStream(groupId: String): Flow<List<TimelinePost>> {
         // DTOのFlowをDomainモデルのFlowに変換して流す
-        return timelineDataSource.getTimelineStream().map { list ->
+        return timelineDataSource.getTimelineStream(groupId).map { list ->
             list.map { it.toDomain() }
         }
     }
@@ -32,6 +32,7 @@ class TimelineRepositoryImpl @Inject constructor(
     override suspend fun createPost(
         userId: String,
         questId: String,
+        groupId: String,
         mediaFile: File,
         mediaType: String,
         comment: String
@@ -59,6 +60,7 @@ class TimelineRepositoryImpl @Inject constructor(
                 id = UUID.randomUUID().toString(),
                 userId = userId,
                 questId = questId,
+                groupId = groupId, // Include groupId here
                 author = authorMap,
                 quest = mapOf(
                     "title" to questDto.title,

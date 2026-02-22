@@ -16,4 +16,5 @@ interface UserRepository {
     suspend fun updateProfile(userId: String, displayName: String, photoFile: File?): Result<Unit>
 
     suspend fun updateFcmToken(userId: String, token: String): Result<Unit>
+    suspend fun updateUserGroupId(userId: String, groupId: String?): Result<Unit>
 }

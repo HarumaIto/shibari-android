@@ -9,10 +9,10 @@ class QuestRepositoryImpl @Inject constructor(
     private val remoteDataSource: QuestRemoteDataSource
 ) : QuestRepository {
 
-    override suspend fun getAllQuests(): List<Quest> {
+    override suspend fun getAllQuests(groupId: String): List<Quest> {
         return try {
             // DataSourceからDTOをもらい、Domainモデルに変換する
-            remoteDataSource.fetchAllQuests().map { it.toDomain() }
+            remoteDataSource.fetchAllQuests(groupId).map { it.toDomain() }
         } catch (e: Exception) {
             // エラー時は空リスト（またはResult型でラップする設計もアリ）
             emptyList()

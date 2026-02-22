@@ -8,12 +8,13 @@ import java.io.File
 
 interface TimelineRepository {
     // タイムラインの監視 (Flow)
-    fun getTimelineStream(): Flow<List<TimelinePost>>
+    fun getTimelineStream(groupId: String): Flow<List<TimelinePost>>
 
     // 投稿
     suspend fun createPost(
         userId: String,
         questId: String,
+        groupId: String,
         mediaFile: File,
         mediaType: String,
         comment: String

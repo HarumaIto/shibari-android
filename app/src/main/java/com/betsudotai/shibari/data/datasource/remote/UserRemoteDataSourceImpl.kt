@@ -52,4 +52,9 @@ class UserRemoteDataSourceImpl @Inject constructor(
         firestore.collection("users").document(userId)
             .update("fcmToken", token).await()
     }
+
+    override suspend fun updateUserGroupId(userId: String, groupId: String?) {
+        firestore.collection("users").document(userId)
+            .update("groupId", groupId).await()
+    }
 }

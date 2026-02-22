@@ -9,9 +9,11 @@ class QuestRemoteDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : QuestRemoteDataSource {
 
-    override suspend fun fetchAllQuests(): List<QuestDto> {
+    override suspend fun fetchAllQuests(groupId: String): List<QuestDto> {
         return try {
-            val snapshot = firestore.collection("quests").get().await()
+            val snapshot = firestore.collection("quests")
+                .whereEqualTo("groupId", groupId) // Filter quests by groupId
+                .get().await()
             // ここでは単にDTOを返すだけ（ドメインロジックは持たない）
             snapshot.documents.mapNotNull { it.toObject(QuestDto::class.java) }
         } catch (e: Exception) {

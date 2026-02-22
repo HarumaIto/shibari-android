@@ -19,8 +19,9 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
 ) : TimelineRemoteDataSource {
 
     // リアルタイム更新の肝！
-    override fun getTimelineStream(): Flow<List<TimelinePostDto>> = callbackFlow {
+    override fun getTimelineStream(groupId: String): Flow<List<TimelinePostDto>> = callbackFlow {
         val collection = firestore.collection("timelines")
+            .whereEqualTo("groupId", groupId) // Filter by groupId
             .orderBy("createdAt", Query.Direction.DESCENDING) // 新しい順
 
         // リスナー登録

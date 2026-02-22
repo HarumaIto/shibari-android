@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 interface TimelineRemoteDataSource {
-    fun getTimelineStream(): Flow<List<TimelinePostDto>>
+    fun getTimelineStream(groupId: String): Flow<List<TimelinePostDto>>
     suspend fun uploadMedia(file: File, path: String): String
     suspend fun createPost(postDto: TimelinePostDto)
     suspend fun updateVote(postId: String, userId: String, vote: String)
