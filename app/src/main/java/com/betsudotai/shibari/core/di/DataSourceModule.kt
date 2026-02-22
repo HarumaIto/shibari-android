@@ -6,6 +6,8 @@ import com.betsudotai.shibari.data.datasource.remote.TimelineRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.TimelineRemoteDataSourceImpl
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSourceImpl
+import com.betsudotai.shibari.data.datasource.remote.GroupRemoteDataSource
+import com.betsudotai.shibari.data.datasource.remote.GroupRemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +35,10 @@ abstract class DataSourceModule {
     abstract fun bindUserRemoteDataSource(
         impl: UserRemoteDataSourceImpl
     ): UserRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupRemoteDataSource(
+        impl: GroupRemoteDataSourceImpl
+    ): GroupRemoteDataSource
 }

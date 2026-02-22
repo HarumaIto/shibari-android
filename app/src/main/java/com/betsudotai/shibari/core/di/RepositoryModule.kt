@@ -1,6 +1,7 @@
 package com.betsudotai.shibari.core.di
 
 import com.betsudotai.shibari.data.repository.AuthRepositoryImpl
+import com.betsudotai.shibari.data.repository.GroupRepositoryImpl
 import com.betsudotai.shibari.data.repository.QuestRepositoryImpl
 import com.betsudotai.shibari.data.repository.TimelineRepositoryImpl
 import com.betsudotai.shibari.data.repository.UserRepositoryImpl
@@ -8,6 +9,7 @@ import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.TimelineRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.betsudotai.shibari.domain.repository.GroupRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         impl: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupRepository(
+        impl: GroupRepositoryImpl
+    ): GroupRepository
 }
