@@ -1,6 +1,5 @@
 package com.betsudotai.shibari.data.repository
 
-import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -15,9 +14,9 @@ class AuthRepositoryImpl @Inject constructor(
     private val firebaseMessaging: FirebaseMessaging
 ) : AuthRepository {
 
-    override val isUserLoggedIn: Flow<Boolean> = callbackFlow {
+    override val userIdFlow: Flow<String?> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser != null)
+            trySend(auth.currentUser?.uid)
         }
         firebaseAuth.addAuthStateListener(authStateListener)
         awaitClose { firebaseAuth.removeAuthStateListener(authStateListener) }
@@ -31,10 +30,10 @@ class AuthRepositoryImpl @Inject constructor(
         return firebaseMessaging.token.await()
     }
 
-    override suspend fun signIn(email: String, password: String): Result<Unit> {
+    override suspend fun signIn(email: String, password: String): Result<String?> {
         return runCatching {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            Unit
+            firebaseAuth.currentUser?.uid
         }
     }
 
