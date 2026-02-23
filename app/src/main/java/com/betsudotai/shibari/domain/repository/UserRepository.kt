@@ -19,4 +19,6 @@ interface UserRepository {
     suspend fun updateUserGroupId(userId: String, groupId: String?): Result<Unit>
 
     suspend fun anonymizeUser(userId: String): Result<Unit>
+
+    suspend fun blockUser(currentUserId: String, targetUserId: String): Result<Unit>
 }

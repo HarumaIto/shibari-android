@@ -9,7 +9,8 @@ data class UserDto(
     @PropertyName("photoUrl") val photoUrl: String? = null,
     @PropertyName("fcmToken") val fcmToken: String? = null,
     @PropertyName("participatingQuestIds") val participatingQuestIds: List<String> = emptyList(),
-    @PropertyName("groupId") val groupId: String? = null
+    @PropertyName("groupId") val groupId: String? = null,
+    @PropertyName("blockedUserIds") val blockedUserIds: List<String> = emptyList()
 ) {
     fun toDomain(): User {
         return User(
@@ -18,7 +19,8 @@ data class UserDto(
             photoUrl = photoUrl,
             fcmToken = fcmToken,
             participatingQuestIds = participatingQuestIds,
-            groupId = groupId
+            groupId = groupId,
+            blockedUserIds = blockedUserIds
         )
     }
 }

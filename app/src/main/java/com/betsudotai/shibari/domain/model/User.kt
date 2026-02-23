@@ -6,5 +6,6 @@ data class User(
     val photoUrl: String?,
     val fcmToken: String?,
     val participatingQuestIds: List<String>,
-    val groupId: String?
+    val groupId: String?,
+    val blockedUserIds: List<String>
 )

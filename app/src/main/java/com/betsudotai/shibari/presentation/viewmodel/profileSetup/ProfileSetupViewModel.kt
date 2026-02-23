@@ -58,7 +58,8 @@ class ProfileSetupViewModel @Inject constructor(
                 photoUrl = null,
                 fcmToken = token,
                 participatingQuestIds = emptyList(),
-                groupId = null
+                groupId = null,
+                blockedUserIds = emptyList()
             )
 
             val result = userRepository.createUser(newUser)

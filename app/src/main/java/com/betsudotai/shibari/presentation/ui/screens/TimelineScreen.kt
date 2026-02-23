@@ -45,11 +45,19 @@ fun TimelineScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.posts.size) { index ->
+                            val post = state.posts[index]
                             TimelinePostItem(
-                                post = state.posts[index],
+                                post = post,
+                                currentUserId = state.userId,
                                 onVote = { id, type -> viewModel.vote(id, type) },
                                 onCommentClick = { id ->
                                     onNavigateToComment(id)
+                                },
+                                onBlockClick = { userId ->
+                                    viewModel.blockUser(userId)
+                                },
+                                onReportClick = { userId, postId ->
+                                    viewModel.reportPost(userId, postId, "")
                                 }
                             )
                         }

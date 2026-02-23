@@ -3,68 +3,77 @@ package com.betsudotai.shibari.presentation.viewmodel.timeline
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.betsudotai.shibari.domain.repository.AuthRepository
+import com.betsudotai.shibari.domain.repository.ReportRepository
 import com.betsudotai.shibari.domain.repository.TimelineRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.betsudotai.shibari.domain.value.VoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TimelineViewModel @Inject constructor(
-    private val repository: TimelineRepository,
-    private val authRepository: AuthRepository, // Inject AuthRepository
-    private val userRepository: UserRepository // Inject UserRepository
+    private val timelineRepository: TimelineRepository,
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository ,
+    private val reportRepository: ReportRepository
 ) : ViewModel() {
 
-    // RepositoryのFlowを監視し、UIStateに変換して保持する
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<TimelineUiState> = authRepository.isUserLoggedIn
-        .map { isLoggedIn ->
-            if (isLoggedIn) {
-                val uid = authRepository.getCurrentUserId()
-                if (uid != null) {
-                    val user = userRepository.getUser(uid)
-                    user?.groupId
-                } else {
-                    null
-                }
-            } else {
-                null
+    private val _uiState = MutableStateFlow<TimelineUiState>(TimelineUiState.Loading)
+    val uiState: StateFlow<TimelineUiState> = _uiState.asStateFlow()
+
+    private var timelineJob: Job? = null
+
+    init {
+        loadTimeline()
+    }
+
+    fun loadTimeline() {
+        timelineJob?.cancel()
+
+        timelineJob = viewModelScope.launch {
+            val uid = authRepository.getCurrentUserId() ?: return@launch
+            val currentUser = userRepository.getUser(uid) ?: return@launch
+
+            val groupId = currentUser.groupId ?: return@launch
+            val blockedIds = currentUser.blockedUserIds
+
+            timelineRepository.getTimelineStream(groupId).collect { posts ->
+                val filteredPosts = posts.filterNot { blockedIds.contains(it.userId) }
+                _uiState.value = TimelineUiState.Success(filteredPosts, currentUser.uid)
             }
         }
-        .flatMapLatest { groupId ->
-            if (groupId != null) {
-                repository.getTimelineStream(groupId) // Pass groupId to repository
-                    .map { posts -> TimelineUiState.Success(posts) as TimelineUiState }
-                    .catch { emit(TimelineUiState.Error(it.message ?: "Unknown error")) }
-            } else {
-                flowOf(TimelineUiState.Error("グループに所属していません。")) // Handle case where user is not in a group
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TimelineUiState.Loading
-        )
+    }
 
     fun vote(postId: String, voteType: VoteType) {
         viewModelScope.launch {
             val uid = authRepository.getCurrentUserId() ?: // エラー処理
             return@launch
 
-            repository.votePost(postId, uid, voteType)
+            timelineRepository.votePost(postId, uid, voteType)
                 .onFailure {
-                    // エラー処理（本来はSnackbarなどで通知）
                     it.printStackTrace()
                 }
+        }
+    }
+
+    fun blockUser(targetUserId: String) {
+        viewModelScope.launch {
+            val uid = authRepository.getCurrentUserId() ?: return@launch
+            userRepository.blockUser(uid, targetUserId)
+            // 再読み込みしてタイムラインから消す
+            loadTimeline()
+        }
+    }
+
+    fun reportPost(targetUserId: String, postId: String, reason: String) {
+        viewModelScope.launch {
+            val uid = authRepository.getCurrentUserId() ?: return@launch
+            reportRepository.reportContent(uid, targetUserId, postId, reason)
         }
     }
 }

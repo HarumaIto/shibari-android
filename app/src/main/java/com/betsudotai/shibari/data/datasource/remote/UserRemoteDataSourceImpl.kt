@@ -63,4 +63,10 @@ class UserRemoteDataSourceImpl @Inject constructor(
         usersCollection.document(userId)
             .update("groupId", groupId).await()
     }
+
+    override suspend fun blockUser(currentUserId: String, targetUserId: String) {
+        usersCollection.document(currentUserId)
+            .update("blockedUserIds", com.google.firebase.firestore.FieldValue.arrayUnion(targetUserId))
+            .await()
+    }
 }

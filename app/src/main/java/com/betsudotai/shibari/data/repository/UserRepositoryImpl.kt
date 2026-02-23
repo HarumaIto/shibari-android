@@ -1,10 +1,13 @@
 package com.betsudotai.shibari.data.repository
 
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
+import com.betsudotai.shibari.data.dto.ReportDto
 import com.betsudotai.shibari.data.dto.UserDto
 import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.google.firebase.Timestamp
 import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -71,6 +74,12 @@ class UserRepositoryImpl @Inject constructor(
                 "fcmToken" to null
             )
             remoteDataSource.updateUser(userId, updates)
+        }
+    }
+
+    override suspend fun blockUser(currentUserId: String, targetUserId: String): Result<Unit> {
+        return runCatching {
+            remoteDataSource.blockUser(currentUserId, targetUserId)
         }
     }
 }
