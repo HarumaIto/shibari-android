@@ -7,11 +7,13 @@ import com.betsudotai.shibari.domain.repository.ReportRepository
 import com.betsudotai.shibari.domain.repository.TimelineRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.betsudotai.shibari.domain.value.VoteType
+import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +44,15 @@ class TimelineViewModel @Inject constructor(
             val groupId = currentUser.groupId ?: return@launch
             val blockedIds = currentUser.blockedUserIds
 
-            timelineRepository.getTimelineStream(groupId).collect { posts ->
+            timelineRepository.getTimelineStream(groupId)
+                .catch { e ->
+                    if (e is FirebaseFirestoreException && e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                        _uiState.value = TimelineUiState.Loading
+                    } else {
+                        e.printStackTrace()
+                    }
+                }
+                .collect { posts ->
                 val filteredPosts = posts.filterNot { blockedIds.contains(it.userId) }
                 _uiState.value = TimelineUiState.Success(filteredPosts, currentUser.uid)
             }
