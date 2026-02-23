@@ -11,33 +11,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
+// ★ ダークモードの配色設定
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = TacticalRedDark,
+    secondary = AchievementGold,
+    tertiary = SuccessNeonGreen,
+
+    background = SlateBackgroundDark,
+    surface = SlateSurfaceDark,
+    surfaceVariant = SlateSurfaceVariantDark,
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onTertiary = Color.Black,
+    onBackground = Color(0xFFF1F5F9), // 真っ白ではなく少し落ち着いた文字色
+    onSurface = Color(0xFFF1F5F9),
+    onSurfaceVariant = Color(0xFF94A3B8) // サブテキスト用
 )
 
+// ★ ライトモードの配色設定
 private val LightColorScheme = lightColorScheme(
-    primary = Blue40,
-    secondary = Yellow40,
-    tertiary = Green40,
+    primary = TacticalRedLight,
+    secondary = AchievementGold,
+    tertiary = SuccessNeonGreen,
 
-    background = Color(0xFFF9FAFB),
-    surfaceVariant = Color.White
+    background = SlateBackgroundLight,
+    surface = SlateSurfaceLight,
+    surfaceVariant = SlateSurfaceVariantLight,
 
-    /* Other default colors to override
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    onSecondary = Color.Black,
+    onTertiary = Color.Black,
+    onBackground = Color(0xFF0F172A),
+    onSurface = Color(0xFF0F172A),
+    onSurfaceVariant = Color(0xFF475569) // サブテキスト用
 )
 
 @Composable
 fun ShibariTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
