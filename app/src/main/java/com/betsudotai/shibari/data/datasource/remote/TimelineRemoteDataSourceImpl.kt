@@ -58,7 +58,7 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
         firestore.collection("timelines").document(postDto.id).set(postDto).await()
     }
 
-    override suspend fun updateVote(postId: String, userId: String, vote: String) {
+    override suspend fun updateVote(postId: String, userId: String, vote: String, memberLength: Int) {
         val docRef = firestore.collection("timelines").document(postId)
 
         firestore.runTransaction { transaction ->
@@ -72,8 +72,7 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
 
             val approvalCount = newVotes.values.count { it == "APPROVE" }
 
-            // ステータス更新ロジック (2票以上で承認など)
-            val newStatus = if (approvalCount >= 2) "approved" else "pending"
+            val newStatus = if (approvalCount >= memberLength / 2) "approved" else "pending"
 
             transaction.update(docRef, mapOf(
                 "votes" to newVotes,

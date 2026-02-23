@@ -9,7 +9,7 @@ interface TimelineRemoteDataSource {
     fun getTimelineStream(groupId: String): Flow<List<TimelinePostDto>>
     suspend fun uploadMedia(file: File, path: String): String
     suspend fun createPost(postDto: TimelinePostDto)
-    suspend fun updateVote(postId: String, userId: String, vote: String)
+    suspend fun updateVote(postId: String, userId: String, vote: String, memberLength: Int)
     fun getCommentsStream(postId: String): Flow<List<CommentDto>>
     suspend fun addComment(postId: String, commentDto: CommentDto)
 }
