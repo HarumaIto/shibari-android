@@ -1,5 +1,6 @@
 package com.betsudotai.shibari.data.repository
 
+import com.betsudotai.shibari.data.datasource.remote.GroupRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.QuestRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.TimelineRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class TimelineRepositoryImpl @Inject constructor(
     private val timelineDataSource: TimelineRemoteDataSource,
     private val questDataSource: QuestRemoteDataSource,
-    private val userDataSource: UserRemoteDataSource
+    private val userDataSource: UserRemoteDataSource,
+    private val groupDataSource: GroupRemoteDataSource
 ) : TimelineRepository {
 
     override fun getTimelineStream(groupId: String): Flow<List<TimelinePost>> {
@@ -79,7 +81,13 @@ class TimelineRepositoryImpl @Inject constructor(
 
     override suspend fun votePost(postId: String, userId: String, vote: VoteType): Result<Unit> {
         return runCatching {
-            timelineDataSource.updateVote(postId, userId, vote.name)
+            val userDto = userDataSource.getUser(userId)
+            if (userDto == null || userDto.groupId == null) {
+                throw IllegalStateException("User not found")
+            }
+            val groupDto = groupDataSource.getGroupDetails(userDto.groupId)
+                ?: throw IllegalStateException("Group not found")
+            timelineDataSource.updateVote(postId, userId, vote.name, groupDto.memberIds.size)
         }
     }
 
