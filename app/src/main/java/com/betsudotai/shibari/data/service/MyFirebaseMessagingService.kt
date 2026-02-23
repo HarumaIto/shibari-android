@@ -54,16 +54,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val channelId = "shibari_default_channel"
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val channel = NotificationChannel(
-                channelId,
-                "別働隊 通知",
-                NotificationManager.IMPORTANCE_HIGH // ポップアップを出すためにHIGHに設定
-            ).apply {
-                description = "別働隊アプリからの重要な通知"
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            channelId,
+            "縛り 通知",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "縛りアプリからの重要な通知"
         }
+        notificationManager.createNotificationChannel(channel)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             // ※アプリアイコンがある場合は R.drawable.ic_notification 等に差し替えてください
