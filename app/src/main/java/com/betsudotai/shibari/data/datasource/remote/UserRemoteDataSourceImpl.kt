@@ -26,7 +26,7 @@ class UserRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateUser(userId: String, data: Map<String, Any?>) {
-        usersCollection.document(userId).set(data).await()
+        usersCollection.document(userId).update(data).await()
     }
 
     override suspend fun updateQuests(userId: String, questIds: List<String>) {
