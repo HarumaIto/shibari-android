@@ -57,8 +57,13 @@ class AuthViewModel @Inject constructor(
             _isLoading.value = true
             val result = authRepository.signIn(email.value, password.value)
 
-            result.onSuccess {
-                val uid = authRepository.getCurrentUserId() ?: return@onSuccess
+            result.onSuccess { uid ->
+                if (uid == null) {
+                    _eventFlow.emit(AuthEvent.ShowError("ログインに失敗しました: ユーザーIDが取得できませんでした。"))
+                    _isLoading.value = false
+                    return@onSuccess
+                }
+
                 // ログイン成功時、Firestoreにユーザーデータがあるかチェック
                 val userProfile = userRepository.getUser(uid)
                 if (userProfile != null) {

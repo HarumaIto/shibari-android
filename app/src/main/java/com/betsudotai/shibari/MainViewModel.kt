@@ -18,21 +18,16 @@ class MainViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    val startDestination: StateFlow<String?> = authRepository.isUserLoggedIn
-        .map { isLoggedIn ->
-            if (isLoggedIn) {
-                val uid = authRepository.getCurrentUserId()
-                if (uid != null) {
-                    val user = userRepository.getUser(uid)
-                    if (user == null) {
-                        Screen.ProfileSetup.route
-                    } else if (user.groupId == null) {
-                        Screen.GroupSelection.route
-                    } else {
-                        Screen.Main.route
-                    }
+    val startDestination: StateFlow<String?> = authRepository.userIdFlow
+        .map { userId ->
+            if (userId != null) {
+                val user = userRepository.getUser(userId)
+                if (user == null) {
+                    Screen.ProfileSetup.route
+                } else if (user.groupId == null) {
+                    Screen.GroupSelection.route
                 } else {
-                    Screen.Auth.route
+                    Screen.Main.route
                 }
             } else {
                 Screen.Auth.route
