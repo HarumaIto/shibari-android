@@ -39,7 +39,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            ShibariTheme() {
+            ShibariTheme(
+                darkTheme = true
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
