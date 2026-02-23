@@ -45,7 +45,7 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 // 参加中のクエスト詳細を取得
-                val allQuests = questRepository.getAllQuests(user.groupId!!)
+                val allQuests = questRepository.getAllQuests(user.groupId ?: "")
                 val myQuests = allQuests.filter { user.participatingQuestIds.contains(it.id) }
 
                 _uiState.value = ProfileUiState.Success(user, myQuests)

@@ -51,7 +51,7 @@ class QuestSelectionViewModel @Inject constructor(
                     _selectedQuestIds.value = user.participatingQuestIds.toSet()
 
                     // 全クエスト一覧を取得
-                    val allQuests = questRepository.getAllQuests(user.groupId!!)
+                    val allQuests = questRepository.getAllQuests(user.groupId ?: "")
                     _quests.value = allQuests
                 }
             }
