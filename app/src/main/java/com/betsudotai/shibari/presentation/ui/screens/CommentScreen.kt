@@ -50,7 +50,6 @@ fun CommentScreen(
         bottomBar = {
             // 画面下部の入力エリア
             BottomAppBar(
-                modifier = Modifier.imePadding(), // キーボードが出た時に上に押し上げる設定
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
