@@ -1,10 +1,11 @@
 package com.betsudotai.shibari.data.dto
 
 import com.betsudotai.shibari.domain.model.Group
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
 data class GroupDto(
-    @PropertyName("id") val id: String = "",
+    @DocumentId val documentId: String = "",
     @PropertyName("name") val name: String = "",
     @PropertyName("description") val description: String = "",
     @PropertyName("ownerId") val ownerId: String = "",
@@ -13,18 +14,7 @@ data class GroupDto(
 ) {
     fun toDomain(): Group {
         return Group(
-            id = id,
-            name = name,
-            description = description,
-            ownerId = ownerId,
-            memberIds = memberIds,
-            invitationCode = invitationCode
-        )
-    }
-
-    fun toDto(): GroupDto {
-        return GroupDto(
-            id = id,
+            id = documentId,
             name = name,
             description = description,
             ownerId = ownerId,

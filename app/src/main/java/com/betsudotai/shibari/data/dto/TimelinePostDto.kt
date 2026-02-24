@@ -8,12 +8,13 @@ import com.betsudotai.shibari.domain.value.VoteType
 import com.betsudotai.shibari.domain.value.MediaType
 import com.betsudotai.shibari.domain.value.QuestType
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 import java.time.LocalDate
 import java.time.ZoneId
 
 data class TimelinePostDto(
-    @PropertyName("id") val id: String = "",
+    @DocumentId val documentId: String = "",
     @PropertyName("userId") val userId: String = "",
     @PropertyName("questId") val questId: String = "",
     @PropertyName("groupId") val groupId: String = "", // Add groupId here
@@ -37,7 +38,7 @@ data class TimelinePostDto(
     fun toDomain(): TimelinePost {
         // 安全に変換するロジック
         return TimelinePost(
-            id = id,
+            id = documentId,
             userId = userId,
             questId = questId,
             groupId = groupId, // Map groupId here

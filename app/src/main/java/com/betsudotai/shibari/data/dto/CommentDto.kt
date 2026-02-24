@@ -3,10 +3,11 @@ package com.betsudotai.shibari.data.dto
 import com.betsudotai.shibari.domain.model.Comment
 import com.betsudotai.shibari.domain.model.timeline.AuthorSnapshot
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
 data class CommentDto (
-    @PropertyName("id") val id: String = "",
+    @DocumentId val documentId: String = "",
     @PropertyName("userId") val userId: String = "",
     @PropertyName("author") val author: Map<String, String?> = emptyMap(),
     @PropertyName("text") val text: String = "",
@@ -14,7 +15,7 @@ data class CommentDto (
 ) {
     fun toDomain(): Comment {
         return Comment(
-            id = id,
+            id = documentId,
             userId = userId,
             author = AuthorSnapshot(
                 displayName = author["displayName"] ?: "Unknown",

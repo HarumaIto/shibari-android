@@ -2,11 +2,12 @@ package com.betsudotai.shibari.data.dto
 
 import com.betsudotai.shibari.domain.model.Quest
 import com.betsudotai.shibari.domain.value.QuestType
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
 // Firestoreのドキュメント構造と完全一致させる
 data class QuestDto(
-    @PropertyName("id") val id: String = "",
+    @DocumentId val documentId: String = "",
     @PropertyName("groupId") val groupId: String = "", // Add groupId here
     @PropertyName("title") val title: String = "",
     @PropertyName("type") val type: String = "", // EnumではなくStringで保存
@@ -16,7 +17,7 @@ data class QuestDto(
     // DTO -> Domain Model への変換メソッド
     fun toDomain(): Quest {
         return Quest(
-            id = id,
+            id = documentId,
             groupId = groupId, // Map groupId here
             title = title,
             type = try {
