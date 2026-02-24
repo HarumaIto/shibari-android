@@ -22,7 +22,7 @@ class UserRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createUser(userDto: UserDto) {
-        usersCollection.document(userDto.id).set(userDto).await()
+        usersCollection.document(userDto.documentId).set(userDto).await()
     }
 
     override suspend fun updateUser(userId: String, data: Map<String, Any?>) {

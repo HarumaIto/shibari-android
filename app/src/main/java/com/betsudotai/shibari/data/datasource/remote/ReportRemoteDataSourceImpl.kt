@@ -11,6 +11,6 @@ class ReportRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun createReport(report: ReportDto) {
         firestore.collection("reports")
-            .document(report.id).set(report).await()
+            .document(report.documentId).set(report).await()
     }
 }

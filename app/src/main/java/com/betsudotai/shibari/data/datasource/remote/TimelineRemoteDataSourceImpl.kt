@@ -55,7 +55,7 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun createPost(postDto: TimelinePostDto) {
         // IDを指定して保存（DTOのIDを使う）
-        firestore.collection("timelines").document(postDto.id).set(postDto).await()
+        firestore.collection("timelines").document(postDto.documentId).set(postDto).await()
     }
 
     override suspend fun updateVote(postId: String, userId: String, vote: String, memberLength: Int) {
@@ -101,6 +101,6 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun addComment(postId: String, commentDto: CommentDto) {
         firestore.collection("timelines").document(postId)
-            .collection("comments").document(commentDto.id).set(commentDto).await()
+            .collection("comments").document(commentDto.documentId).set(commentDto).await()
     }
 }

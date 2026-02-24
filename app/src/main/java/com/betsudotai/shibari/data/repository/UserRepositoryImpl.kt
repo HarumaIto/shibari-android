@@ -23,7 +23,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun createUser(user: User): Result<Unit> {
         return runCatching {
             val dto = UserDto(
-                id = user.uid,
+                documentId = user.uid,
                 displayName = user.displayName,
                 photoUrl = user.photoUrl,
                 fcmToken = user.fcmToken,

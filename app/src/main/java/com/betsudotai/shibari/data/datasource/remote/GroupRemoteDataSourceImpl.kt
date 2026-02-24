@@ -15,7 +15,7 @@ class GroupRemoteDataSourceImpl @Inject constructor(
     override suspend fun createGroup(groupDto: GroupDto): GroupDto {
         val newGroupId = groupsCollection.document().id
         val invitationCode = groupDto.invitationCode.ifEmpty { generateInvitationCode() }
-        val groupWithId = groupDto.copy(id = newGroupId, invitationCode = invitationCode)
+        val groupWithId = groupDto.copy(documentId = newGroupId, invitationCode = invitationCode)
         groupsCollection.document(newGroupId).set(groupWithId).await()
         return groupWithId
     }
