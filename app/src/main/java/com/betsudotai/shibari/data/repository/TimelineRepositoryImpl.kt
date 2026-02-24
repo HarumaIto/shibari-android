@@ -59,7 +59,7 @@ class TimelineRepositoryImpl @Inject constructor(
 
             // 4. DTOを作成
             val newPost = TimelinePostDto(
-                id = UUID.randomUUID().toString(),
+                documentId = UUID.randomUUID().toString(),
                 userId = userId,
                 questId = questId,
                 groupId = groupId, // Include groupId here
@@ -109,7 +109,7 @@ class TimelineRepositoryImpl @Inject constructor(
             )
 
             val newComment = CommentDto(
-                id = UUID.randomUUID().toString(),
+                documentId = UUID.randomUUID().toString(),
                 userId = userId,
                 author = authorMap,
                 text = text,

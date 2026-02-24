@@ -14,7 +14,7 @@ class ReportRepositoryImpl @Inject constructor(
         return runCatching {
             val reportId = UUID.randomUUID().toString()
             val report = ReportDto(
-                id = reportId,
+                documentId = reportId,
                 reporterId = reporterId,
                 reportedUserId = reportedUserId,
                 postId = postId,
