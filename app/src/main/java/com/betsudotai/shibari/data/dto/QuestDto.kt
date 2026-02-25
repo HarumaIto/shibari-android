@@ -1,6 +1,7 @@
 package com.betsudotai.shibari.data.dto
 
 import com.betsudotai.shibari.domain.model.Quest
+import com.betsudotai.shibari.domain.value.QuestFrequency
 import com.betsudotai.shibari.domain.value.QuestType
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
@@ -11,6 +12,7 @@ data class QuestDto(
     @PropertyName("groupId") val groupId: String = "", // Add groupId here
     @PropertyName("title") val title: String = "",
     @PropertyName("type") val type: String = "", // EnumではなくStringで保存
+    @PropertyName("frequency") val frequency: String = "",
     @PropertyName("description") val description: String = "",
     @PropertyName("threshold") val threshold: Int? = null
 ) {
@@ -24,6 +26,11 @@ data class QuestDto(
                 QuestType.valueOf(type)
             } catch (e: Exception) {
                 QuestType.ROUTINE // フォールバック
+            },
+            frequency = try {
+                QuestFrequency.valueOf(frequency)
+            } catch (e: Exception) {
+                QuestFrequency.ALWAYS
             },
             description = description,
             threshold = threshold
