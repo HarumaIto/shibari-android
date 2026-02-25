@@ -13,7 +13,7 @@ interface AuthRepository {
     // メールリンク or メールパスワード等でのサインイン（今回はシンプルなメール＆パスワードを想定）
     suspend fun signIn(email: String, password: String): Result<String?>
     suspend fun signUp(email: String, password: String): Result<String> // 成功時にUIDを返す
-    suspend fun signInWithGoogle(idToken: String): String?
+    suspend fun signInWithGoogle(idToken: String): Result<String?>
 
     suspend fun signOut()
     suspend fun deleteAccount(): Result<Unit>

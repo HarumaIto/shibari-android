@@ -45,14 +45,12 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signInWithGoogle(idToken: String): String? {
-        return try {
+    override suspend fun signInWithGoogle(idToken: String): Result<String?> {
+        return runCatching {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = firebaseAuth.signInWithCredential(credential).await()
 
             authResult.user?.uid
-        } catch (e: Exception) {
-            throw Exception("Firebaseへのログインに失敗しました: ${e.localizedMessage}")
         }
     }
 
