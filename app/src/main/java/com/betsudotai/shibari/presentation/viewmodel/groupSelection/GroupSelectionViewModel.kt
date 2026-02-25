@@ -30,6 +30,7 @@ class GroupSelectionViewModel @Inject constructor(
     val eventFlow: SharedFlow<GroupSelectionEvent> = _eventFlow.asSharedFlow()
 
     fun createGroup(name: String, description: String) {
+        if (name.isEmpty()) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
