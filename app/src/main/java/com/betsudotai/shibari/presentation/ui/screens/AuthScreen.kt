@@ -73,13 +73,11 @@ fun AuthScreen(
                     text = "別働隊",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Black,
-                    color = Color.White
                 )
 
                 Text(
                     text = "- Shibari -",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Gray
                 )
             }
 
