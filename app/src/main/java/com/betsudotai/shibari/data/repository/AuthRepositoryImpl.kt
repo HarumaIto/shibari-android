@@ -2,6 +2,7 @@ package com.betsudotai.shibari.data.repository
 
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -41,6 +42,17 @@ class AuthRepositoryImpl @Inject constructor(
         return runCatching {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             result.user?.uid ?: throw Exception("User creation failed")
+        }
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): String? {
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val authResult = firebaseAuth.signInWithCredential(credential).await()
+
+            authResult.user?.uid
+        } catch (e: Exception) {
+            throw Exception("Firebaseへのログインに失敗しました: ${e.localizedMessage}")
         }
     }
 

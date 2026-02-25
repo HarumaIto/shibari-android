@@ -1,9 +1,17 @@
 package com.betsudotai.shibari.presentation.viewmodel.auth
 
+import android.content.Context
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.betsudotai.shibari.R
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,6 +83,57 @@ class AuthViewModel @Inject constructor(
                 _eventFlow.emit(AuthEvent.ShowError(e.message ?: "ログインに失敗しました"))
             }
             _isLoading.value = false
+        }
+    }
+
+    fun signInWithGoogle(context: Context) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            try {
+                // 1. UI層でCredentialManagerを呼び出す
+                val credentialManager = CredentialManager.create(context)
+                val webClientId =
+                    context.getString(R.string.default_web_client_id)
+
+                val googleIdOption = GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(webClientId)
+                    .setAutoSelectEnabled(true)
+                    .build()
+
+                val request = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+
+                val result = credentialManager.getCredential(context, request)
+
+                val credential = result.credential
+                if (credential !is CustomCredential || credential.type != TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    _eventFlow.emit(AuthEvent.ShowError("サポートされていない認証方式です"))
+                    _isLoading.value = false
+                    return@launch
+                }
+
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val uid = authRepository.signInWithGoogle(googleIdTokenCredential.idToken)
+                if (uid == null) {
+                    _eventFlow.emit(AuthEvent.ShowError("ログインに失敗しました: ユーザーIDが取得できませんでした。"))
+                    _isLoading.value = false
+                    return@launch
+                }
+
+                val userProfile = userRepository.getUser(uid)
+                if (userProfile != null) {
+                    _eventFlow.emit(AuthEvent.NavigateToMain)
+                } else {
+                    _eventFlow.emit(AuthEvent.NavigateToProfileSetup)
+                }
+            } catch (e: Exception) {
+                _eventFlow.emit(AuthEvent.ShowError(e.message ?: "ログインに失敗しました"))
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }
