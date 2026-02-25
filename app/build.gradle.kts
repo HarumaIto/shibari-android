@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "2.3.10"
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -79,6 +80,10 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    // Crashlytics
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
