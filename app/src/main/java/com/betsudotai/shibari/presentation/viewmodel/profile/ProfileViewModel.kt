@@ -68,10 +68,16 @@ class ProfileViewModel @Inject constructor(
             val uid = authRepository.getCurrentUserId()
 
             if (uid != null) {
-                userRepository.anonymizeUser(uid)
+                val result = userRepository.anonymizeUser(uid)
 
-                // anonymizeUserによって、サーバー側で退会処理が行われるのでログアウト
-                authRepository.signOut()
+                result.onSuccess {
+                    // anonymizeUserによって、サーバー側で退会処理が行われるのでログアウト
+                    authRepository.signOut()
+                }.onFailure { e ->
+                    _uiState.value = ProfileUiState.Error(e.message ?: "アカウントの削除に失敗しました")
+                }
+            } else {
+                _uiState.value = ProfileUiState.Error("ログインしていません")
             }
         }
     }
