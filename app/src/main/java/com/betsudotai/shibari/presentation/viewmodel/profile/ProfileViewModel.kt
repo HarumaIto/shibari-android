@@ -68,21 +68,16 @@ class ProfileViewModel @Inject constructor(
             val uid = authRepository.getCurrentUserId()
 
             if (uid != null) {
-                userRepository.anonymizeUser(uid)
+                val result = userRepository.anonymizeUser(uid)
 
-                val result = authRepository.deleteAccount()
                 result.onSuccess {
-                    _eventFlow.emit(ProfileEvent.NavigateToLogin)
-                }.onFailure { error ->
-                    if (error is FirebaseAuthRecentLoginRequiredException) {
-                        authRepository.signOut()
-                        _eventFlow.emit(ProfileEvent.ShowError("セキュリティのため、一度再ログインしてから退会処理を行ってください。"))
-                        _eventFlow.emit(ProfileEvent.NavigateToLogin)
-                    } else {
-                        _eventFlow.emit(ProfileEvent.ShowError("退会処理に失敗しました: ${error.localizedMessage}"))
-                        loadProfile()
-                    }
+                    // anonymizeUserによって、サーバー側で退会処理が行われるのでログアウト
+                    authRepository.signOut()
+                }.onFailure { e ->
+                    _uiState.value = ProfileUiState.Error(e.message ?: "アカウントの削除に失敗しました")
                 }
+            } else {
+                _uiState.value = ProfileUiState.Error("ログインしていません")
             }
         }
     }
