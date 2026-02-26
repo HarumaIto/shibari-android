@@ -71,7 +71,8 @@ class UserRepositoryImpl @Inject constructor(
             val updates = mapOf<String, Any?>(
                 "isDeleted" to true,
                 "displayName" to "退会済みユーザー",
-                "fcmToken" to null
+                "fcmToken" to null,
+                "photoUrl" to null,
             )
             remoteDataSource.updateUser(userId, updates)
         }
