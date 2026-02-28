@@ -5,9 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.betsudotai.shibari.presentation.ui.theme.ShibariTheme
 import com.betsudotai.shibari.presentation.viewmodel.profileSetup.ProfileSetupEvent
 import com.betsudotai.shibari.presentation.viewmodel.profileSetup.ProfileSetupViewModel
 
@@ -29,6 +31,23 @@ fun ProfileSetupScreen(
         }
     }
 
+    ProfileSetupScreenContent(
+        snackbarHostState = snackbarHostState,
+        displayName = displayName,
+        isLoading = isLoading,
+        onNameChange = viewModel::onNameChange,
+        onSaveClick = { viewModel.saveProfile() }
+    )
+}
+
+@Composable
+fun ProfileSetupScreenContent(
+    snackbarHostState: SnackbarHostState,
+    displayName: String,
+    isLoading: Boolean,
+    onNameChange: (String) -> Unit,
+    onSaveClick: () -> Unit
+) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -47,7 +66,7 @@ fun ProfileSetupScreen(
 
             OutlinedTextField(
                 value = displayName,
-                onValueChange = viewModel::onNameChange,
+                onValueChange = onNameChange,
                 label = { Text("表示名 (ニックネーム)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -58,12 +77,28 @@ fun ProfileSetupScreen(
                 CircularProgressIndicator()
             } else {
                 Button(
-                    onClick = { viewModel.saveProfile() },
+                    onClick = onSaveClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("保存して始める")
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileSetupScreenContentPreview() {
+    ShibariTheme (
+        darkTheme = true,
+    ) {
+        ProfileSetupScreenContent(
+            displayName = "テストユーザー",
+            isLoading = false,
+            snackbarHostState = remember { SnackbarHostState() },
+            onNameChange = {},
+            onSaveClick = {}
+        )
     }
 }
