@@ -62,6 +62,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
