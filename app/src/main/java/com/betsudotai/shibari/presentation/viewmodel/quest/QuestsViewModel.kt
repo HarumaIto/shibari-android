@@ -48,16 +48,13 @@ class QuestsViewModel @Inject constructor(
                     return@launch
                 }
 
-                val questIds = user.participatingQuestIds
-                if (questIds.isEmpty()) {
-                    // 参加中の縛りがない場合
+                // 参加中クエストと達成状況をリポジトリで一括取得
+                val myQuests = questRepository.getMyQuests(uid, groupId)
+
+                if (myQuests.isEmpty()) {
                     _uiState.value = QuestsUiState.Success(emptyList())
                     return@launch
                 }
-
-                // 全クエストを取得し、自分が参加しているものだけをフィルタリングする
-                val allQuests = questRepository.getAllQuests(groupId) // Pass groupId
-                val myQuests = allQuests.filter { questIds.contains(it.id) }
 
                 val groupedQuests = myQuests
                     .groupBy { it.frequency }
