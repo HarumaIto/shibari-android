@@ -20,12 +20,17 @@ class UserRepositoryImpl @Inject constructor(
         }.getOrNull()
     }
 
-    override suspend fun createUser(user: User): Result<Unit> {
+    override suspend fun createUser(user: User, photoFile: File?): Result<Unit> {
         return runCatching {
+            val photoUrl =  if (photoFile != null) {
+                remoteDataSource.uploadProfileImage(user.uid, photoFile)
+            } else {
+                null
+            }
             val dto = UserDto(
                 documentId = user.uid,
                 displayName = user.displayName,
-                photoUrl = user.photoUrl,
+                photoUrl = photoUrl,
                 fcmToken = user.fcmToken,
                 participatingQuestIds = user.participatingQuestIds
             )
