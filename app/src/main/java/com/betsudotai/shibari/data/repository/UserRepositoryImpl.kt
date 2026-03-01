@@ -22,19 +22,23 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun createUser(user: User, photoFile: File?): Result<Unit> {
         return runCatching {
-            val photoUrl =  if (photoFile != null) {
-                remoteDataSource.uploadProfileImage(user.uid, photoFile)
-            } else {
-                null
+            try {
+                val photoUrl = if (photoFile != null) {
+                    remoteDataSource.uploadProfileImage(user.uid, photoFile)
+                } else {
+                    null
+                }
+                val dto = UserDto(
+                    documentId = user.uid,
+                    displayName = user.displayName,
+                    photoUrl = photoUrl,
+                    fcmToken = user.fcmToken,
+                    participatingQuestIds = user.participatingQuestIds
+                )
+                remoteDataSource.createUser(dto)
+            } finally {
+                photoFile?.delete()
             }
-            val dto = UserDto(
-                documentId = user.uid,
-                displayName = user.displayName,
-                photoUrl = photoUrl,
-                fcmToken = user.fcmToken,
-                participatingQuestIds = user.participatingQuestIds
-            )
-            remoteDataSource.createUser(dto)
         }
     }
 
@@ -50,12 +54,16 @@ class UserRepositoryImpl @Inject constructor(
         photoFile: File?
     ): Result<Unit> {
         return runCatching {
-            val photoUrl = if (photoFile != null) {
-                remoteDataSource.uploadProfileImage(userId, photoFile)
-            } else {
-                null
+            try {
+                val photoUrl = if (photoFile != null) {
+                    remoteDataSource.uploadProfileImage(userId, photoFile)
+                } else {
+                    null
+                }
+                remoteDataSource.updateProfile(userId, displayName, photoUrl)
+            } finally {
+                photoFile?.delete()
             }
-            remoteDataSource.updateProfile(userId, displayName, photoUrl)
         }
     }
 
