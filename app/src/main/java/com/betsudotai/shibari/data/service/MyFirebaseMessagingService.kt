@@ -3,9 +3,10 @@ package com.betsudotai.shibari.data.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.betsudotai.shibari.domain.model.AppNotification
 import com.betsudotai.shibari.domain.repository.AuthRepository
+import com.betsudotai.shibari.domain.repository.NotificationRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -14,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,6 +27,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
@@ -48,6 +54,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val body = message.notification?.body ?: message.data["body"] ?: ""
 
         showNotification(title, body)
+        saveNotificationToFirestore(title, body)
+    }
+
+    private fun saveNotificationToFirestore(title: String, body: String) {
+        scope.launch {
+            val userId = authRepository.getCurrentUserId() ?: return@launch
+            val notification = AppNotification(
+                id = UUID.randomUUID().toString(),
+                title = title,
+                body = body,
+                isRead = false,
+                createdAt = LocalDateTime.now()
+            )
+            notificationRepository.saveNotification(userId, notification)
+                .onFailure { it.printStackTrace() }
+        }
     }
 
     private fun showNotification(title: String, message: String) {
