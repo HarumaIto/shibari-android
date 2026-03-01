@@ -8,7 +8,7 @@ interface UserRepository {
     suspend fun getUser(userId: String): User?
 
     // 新規登録時のプロフィール作成
-    suspend fun createUser(user: User): Result<Unit>
+    suspend fun createUser(user: User, photoFile: File?): Result<Unit>
 
     // 参加するクエストの更新
     suspend fun updateParticipatingQuests(userId: String, questIds: List<String>): Result<Unit>

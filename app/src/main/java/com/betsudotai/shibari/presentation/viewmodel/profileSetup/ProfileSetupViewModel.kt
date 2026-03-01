@@ -1,7 +1,10 @@
 package com.betsudotai.shibari.presentation.viewmodel.profileSetup
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.betsudotai.shibari.core.util.FileUtil
 import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
@@ -25,6 +28,9 @@ class ProfileSetupViewModel @Inject constructor(
     private val _displayName = MutableStateFlow("")
     val displayName: StateFlow<String> = _displayName.asStateFlow()
 
+    private val _selectedImageUri = MutableStateFlow<Uri?>(null)
+    val selectedImageUri: StateFlow<Uri?> = _selectedImageUri.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -32,8 +38,9 @@ class ProfileSetupViewModel @Inject constructor(
     val eventFlow: SharedFlow<ProfileSetupEvent> = _eventFlow.asSharedFlow()
 
     fun onNameChange(name: String) { _displayName.update { name } }
+    fun onImageSelected(uri: Uri?) { _selectedImageUri.value = uri }
 
-    fun saveProfile() {
+    fun saveProfile(context: Context) {
         if (_displayName.value.isBlank()) {
             viewModelScope.launch { _eventFlow.emit(ProfileSetupEvent.ShowError("名前を入力してください")) }
             return
@@ -51,6 +58,15 @@ class ProfileSetupViewModel @Inject constructor(
 
             val token = authRepository.getFCMToken()
 
+            val photoFile = _selectedImageUri.value?.let { uri ->
+                FileUtil.createTempFileFromUri(context, uri)
+            }
+
+            if (_selectedImageUri.value != null && photoFile == null) {
+                _eventFlow.emit(ProfileSetupEvent.ShowError("画像のアップロードに失敗しました"))
+                _isLoading.value = false
+                return@launch
+            }
             // 新規ユーザーモデルの作成
             val newUser = User(
                 uid = uid,
@@ -62,7 +78,7 @@ class ProfileSetupViewModel @Inject constructor(
                 blockedUserIds = emptyList()
             )
 
-            val result = userRepository.createUser(newUser)
+            val result = userRepository.createUser(newUser, photoFile)
             result.onSuccess {
                 _eventFlow.emit(ProfileSetupEvent.NavigateToGroupSelection)
             }.onFailure {
