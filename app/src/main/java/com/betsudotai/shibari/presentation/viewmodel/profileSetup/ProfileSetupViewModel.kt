@@ -62,6 +62,11 @@ class ProfileSetupViewModel @Inject constructor(
                 FileUtil.createTempFileFromUri(context, uri)
             }
 
+            if (_selectedImageUri.value != null && photoFile == null) {
+                _eventFlow.emit(ProfileSetupEvent.ShowError("画像のアップロードに失敗しました"))
+                _isLoading.value = false
+                return@launch
+            }
             // 新規ユーザーモデルの作成
             val newUser = User(
                 uid = uid,
