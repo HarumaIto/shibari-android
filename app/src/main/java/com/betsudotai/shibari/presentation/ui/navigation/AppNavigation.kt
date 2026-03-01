@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.betsudotai.shibari.presentation.ui.screens.AuthScreen
 import com.betsudotai.shibari.presentation.ui.screens.CommentScreen
 import com.betsudotai.shibari.presentation.ui.screens.MainScreen
+import com.betsudotai.shibari.presentation.ui.screens.NotificationScreen
 import com.betsudotai.shibari.presentation.ui.screens.PostScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileEditScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
@@ -87,7 +88,12 @@ fun AppNavigation(
         }
 
         composable(Screen.Main.route) {
-            MainScreen(navController)
+            MainScreen(
+                navController,
+                onNavigateToNotifications = {
+                    navController.navigate(Screen.Notifications.route)
+                }
+            )
         }
 
         composable(
@@ -106,6 +112,14 @@ fun AppNavigation(
             arguments = listOf(navArgument("postId") { type = NavType.StringType })
         ) {
             CommentScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.Notifications.route) {
+            NotificationScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
