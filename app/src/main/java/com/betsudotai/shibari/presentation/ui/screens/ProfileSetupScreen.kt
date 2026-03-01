@@ -108,7 +108,12 @@ fun ProfileSetupScreenContent(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(60.dp), tint = Color.Gray)
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "プロフィール画像を選択",
+                        modifier = Modifier.size(60.dp),
+                        tint = Color.Gray
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
