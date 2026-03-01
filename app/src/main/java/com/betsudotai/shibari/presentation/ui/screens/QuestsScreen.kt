@@ -23,7 +23,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -104,32 +106,50 @@ fun QuestsScreen(
                                         )
                                     }
                                     group.quests.forEach { quest ->
-                                        val isAchieved = state.achievedQuestIds.contains(quest.id)
                                         Card(
                                             modifier = Modifier.fillMaxWidth(),
                                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                             colors = CardDefaults.cardColors(
-                                                containerColor = if (isAchieved)
+                                                containerColor = if (quest.isCompleted)
                                                     MaterialTheme.colorScheme.primaryContainer
                                                 else
                                                     MaterialTheme.colorScheme.surfaceVariant
                                             )
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
-                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
                                                     Text(
                                                         text = quest.title,
                                                         style = MaterialTheme.typography.titleLarge,
                                                         fontWeight = FontWeight.Bold,
                                                         modifier = Modifier.weight(1f)
                                                     )
-                                                    if (isAchieved) {
-                                                        Icon(
-                                                            imageVector = Icons.Default.CheckCircle,
-                                                            contentDescription = "達成済み",
-                                                            tint = MaterialTheme.colorScheme.primary,
-                                                            modifier = Modifier.size(24.dp)
-                                                        )
+                                                    if (quest.isCompleted) {
+                                                        // 期間内クリアバッジ
+                                                        Surface(
+                                                            color = MaterialTheme.colorScheme.primary,
+                                                            shape = MaterialTheme.shapes.small
+                                                        ) {
+                                                            Row(
+                                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                Icon(
+                                                                    imageVector = Icons.Default.CheckCircle,
+                                                                    contentDescription = null,
+                                                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                                                    modifier = Modifier.size(14.dp)
+                                                                )
+                                                                Spacer(modifier = Modifier.width(4.dp))
+                                                                Text(
+                                                                    text = "期間内クリア",
+                                                                    style = MaterialTheme.typography.labelSmall,
+                                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                                )
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 Spacer(modifier = Modifier.height(8.dp))
@@ -140,16 +160,20 @@ fun QuestsScreen(
                                                 Spacer(modifier = Modifier.height(16.dp))
 
                                                 // 投稿画面へ遷移するボタン
-                                                Button(
-                                                    onClick = { onNavigateToPost(quest.id) },
-                                                    enabled = !isAchieved,
-                                                    modifier = Modifier.align(Alignment.End)
-                                                ) {
-                                                    if (isAchieved) {
-                                                        Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                                                if (quest.isCompleted) {
+                                                    OutlinedButton(
+                                                        onClick = { onNavigateToPost(quest.id) },
+                                                        modifier = Modifier.align(Alignment.End)
+                                                    ) {
+                                                        Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                                                         Spacer(modifier = Modifier.width(8.dp))
-                                                        Text("達成済み")
-                                                    } else {
+                                                        Text("再提出")
+                                                    }
+                                                } else {
+                                                    Button(
+                                                        onClick = { onNavigateToPost(quest.id) },
+                                                        modifier = Modifier.align(Alignment.End)
+                                                    ) {
                                                         Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                                                         Spacer(modifier = Modifier.width(8.dp))
                                                         Text("証拠を提出")

@@ -10,6 +10,6 @@ data class QuestGroup (
 
 sealed interface QuestsUiState {
     data object Loading : QuestsUiState
-    data class Success(val groupedQuests: List<QuestGroup>, val achievedQuestIds: Set<String> = emptySet()) : QuestsUiState
+    data class Success(val groupedQuests: List<QuestGroup>) : QuestsUiState
     data class Error(val message: String) : QuestsUiState
 }
