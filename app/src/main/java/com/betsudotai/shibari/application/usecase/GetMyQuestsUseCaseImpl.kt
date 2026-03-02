@@ -46,7 +46,7 @@ class GetMyQuestsUseCaseImpl @Inject constructor(
     private fun isInCurrentPeriod(date: LocalDate, frequency: QuestFrequency): Boolean {
         val today = LocalDate.now()
         return when (frequency) {
-            QuestFrequency.ALWAYS -> true
+            QuestFrequency.ALWAYS -> false
             QuestFrequency.DAILY -> date == today
             QuestFrequency.WEEKLY -> {
                 val weekFields = WeekFields.ISO
