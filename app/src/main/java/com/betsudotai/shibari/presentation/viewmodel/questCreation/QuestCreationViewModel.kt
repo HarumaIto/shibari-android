@@ -93,13 +93,12 @@ class QuestCreationViewModel @Inject constructor(
             }
 
             val quest = Quest(
-                id = "",
                 groupId = groupId,
                 title = _title.value.trim(),
                 type = _selectedType.value,
                 frequency = _selectedFrequency.value,
                 description = _description.value.trim(),
-                threshold = _threshold.value.toIntOrNull() ?: 1
+                threshold = _threshold.value.toIntOrNull()
             )
 
             val result = questRepository.createQuest(quest)
