@@ -31,5 +31,5 @@ interface TimelineRepository {
 
     suspend fun addComment(postId: String, userId: String, text: String): Result<Unit>
 
-    suspend fun getMyPostsForQuests(userId: String, questIds: List<String>): List<TimelinePost>
+    suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePost>
 }

@@ -120,7 +120,7 @@ class TimelineRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMyPostsForQuests(userId: String, questIds: List<String>): List<TimelinePost> {
-        return timelineDataSource.getMyPostsForQuests(userId, questIds).map { it.toDomain() }
+    override suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePost> {
+        return timelineDataSource.getMyPostsForQuests(userId, groupId, questIds).map { it.toDomain() }
     }
 }

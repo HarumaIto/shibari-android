@@ -12,5 +12,5 @@ interface TimelineRemoteDataSource {
     suspend fun updateVote(postId: String, userId: String, vote: String, memberLength: Int)
     fun getCommentsStream(postId: String): Flow<List<CommentDto>>
     suspend fun addComment(postId: String, commentDto: CommentDto)
-    suspend fun getMyPostsForQuests(userId: String, questIds: List<String>): List<TimelinePostDto>
+    suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePostDto>
 }

@@ -31,7 +31,7 @@ class GetMyQuestsUseCaseImpl @Inject constructor(
 
         // 3. 期間内の自分の投稿をまとめて取得（N+1を回避）
         val myQuestIds = myQuests.map { it.id }
-        val myPosts = timelineRepository.getMyPostsForQuests(userId, myQuestIds)
+        val myPosts = timelineRepository.getMyPostsForQuests(userId, groupId, myQuestIds)
 
         // 4. 各クエストの達成状況を判定してDomainモデルを生成
         return myQuests.map { quest ->
