@@ -4,7 +4,7 @@ import com.betsudotai.shibari.domain.value.QuestFrequency
 import com.betsudotai.shibari.domain.value.QuestType
 
 data class Quest(
-    val id: String,
+    val id: String = "",
     val groupId: String,
     val title: String,
     val type: QuestType,
