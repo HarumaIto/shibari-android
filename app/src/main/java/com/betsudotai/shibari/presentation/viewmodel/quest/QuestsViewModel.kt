@@ -3,8 +3,8 @@ package com.betsudotai.shibari.presentation.viewmodel.quest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.betsudotai.shibari.domain.repository.AuthRepository
-import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.betsudotai.shibari.domain.usecase.GetMyQuestsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class QuestsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val questRepository: QuestRepository
+    private val getMyQuestsUseCase: GetMyQuestsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<QuestsUiState>(QuestsUiState.Loading)
@@ -48,8 +48,7 @@ class QuestsViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 参加中クエストと達成状況をリポジトリで一括取得
-                val myQuests = questRepository.getMyQuests(uid, groupId)
+                val myQuests = getMyQuestsUseCase(uid, groupId)
 
                 if (myQuests.isEmpty()) {
                     _uiState.value = QuestsUiState.Success(emptyList())
