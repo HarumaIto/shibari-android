@@ -14,6 +14,7 @@ import com.betsudotai.shibari.presentation.ui.screens.MainScreen
 import com.betsudotai.shibari.presentation.ui.screens.PostScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileEditScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
+import com.betsudotai.shibari.presentation.ui.screens.QuestCreationScreen
 import com.betsudotai.shibari.presentation.ui.screens.QuestSelectionScreen
 import com.betsudotai.shibari.presentation.ui.screens.GroupSelectionScreen
 
@@ -72,6 +73,17 @@ fun AppNavigation(
                     navController.navigate(Screen.Main.route) {
                         popUpTo(Screen.QuestSelection.route) { inclusive = true }
                     }
+                },
+                onNavigateToQuestCreation = {
+                    navController.navigate(Screen.QuestCreation.route)
+                }
+            )
+        }
+
+        composable(Screen.QuestCreation.route) {
+            QuestCreationScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

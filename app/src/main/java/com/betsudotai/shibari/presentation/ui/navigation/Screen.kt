@@ -14,6 +14,8 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
 
     data object ProfileEdit: Screen("profile_edit")
 
+    data object QuestCreation : Screen("quest_creation")
+
     data object Main : Screen("main")
 
     data object Post: Screen("post/{questId}") {
