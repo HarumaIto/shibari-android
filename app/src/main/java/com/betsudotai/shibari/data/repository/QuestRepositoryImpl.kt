@@ -6,6 +6,7 @@ import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
 import com.betsudotai.shibari.domain.model.Quest
 import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.value.QuestFrequency
+import com.google.firebase.Timestamp
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.WeekFields
@@ -63,7 +64,7 @@ class QuestRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun com.google.firebase.Timestamp.toLocalDate(): LocalDate =
+    private fun Timestamp.toLocalDate(): LocalDate =
         toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
     private fun isInCurrentPeriod(date: LocalDate, frequency: QuestFrequency): Boolean {
