@@ -103,4 +103,14 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
         firestore.collection("timelines").document(postId)
             .collection("comments").document(commentDto.documentId).set(commentDto).await()
     }
+
+    override suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePostDto> {
+        if (questIds.isEmpty()) return emptyList()
+        return firestore.collection("timelines")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("groupId", groupId)
+            .whereIn("questId", questIds)
+            .get().await()
+            .documents.mapNotNull { it.toObject(TimelinePostDto::class.java) }
+    }
 }

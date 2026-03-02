@@ -119,4 +119,8 @@ class TimelineRepositoryImpl @Inject constructor(
             timelineDataSource.addComment(postId, newComment)
         }
     }
+
+    override suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePost> {
+        return timelineDataSource.getMyPostsForQuests(userId, groupId, questIds).map { it.toDomain() }
+    }
 }
