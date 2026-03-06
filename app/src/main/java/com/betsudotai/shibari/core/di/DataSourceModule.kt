@@ -8,6 +8,8 @@ import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.UserRemoteDataSourceImpl
 import com.betsudotai.shibari.data.datasource.remote.GroupRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.GroupRemoteDataSourceImpl
+import com.betsudotai.shibari.data.datasource.remote.NotificationRemoteDataSource
+import com.betsudotai.shibari.data.datasource.remote.NotificationRemoteDataSourceImpl
 import com.betsudotai.shibari.data.datasource.remote.ReportRemoteDataSource
 import com.betsudotai.shibari.data.datasource.remote.ReportRemoteDataSourceImpl
 import dagger.Binds
@@ -49,5 +51,11 @@ abstract class DataSourceModule {
     abstract fun bindReportRemoteDataSource(
         impl: ReportRemoteDataSourceImpl
     ): ReportRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRemoteDataSource(
+        impl: NotificationRemoteDataSourceImpl
+    ): NotificationRemoteDataSource
 
 }

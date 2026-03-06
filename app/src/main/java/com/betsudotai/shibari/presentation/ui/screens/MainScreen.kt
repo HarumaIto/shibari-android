@@ -70,8 +70,8 @@ fun MainScreen(parentNavController: NavHostController) {
                 onNavigateToGroup = {
                     parentNavController.navigate(Screen.Group.route)
                 },
-                onNavigateToNotification = {
-                    parentNavController.navigate(Screen.Notification.route)
+                onNavigateToNotifications = {
+                    parentNavController.navigate(Screen.Notifications.route)
                 }
             ) }
             composable(Screen.Profile.route) { ProfileScreen(

@@ -29,5 +29,5 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
     data object  Profile: Screen("profile", "プロフィール", Icons.Default.Person)
 
     data object Group: Screen("group")
-    data object Notification: Screen("notification")
+    data object Notifications: Screen("notifications")
 }

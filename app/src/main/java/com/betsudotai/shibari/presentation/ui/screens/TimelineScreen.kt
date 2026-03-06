@@ -40,7 +40,7 @@ fun TimelineScreen(
     viewModel: TimelineViewModel = hiltViewModel(),
     onNavigateToComment: (String) -> Unit,
     onNavigateToGroup: () -> Unit,
-    onNavigateToNotification: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
 ) {
     // ViewModelの状態を監視
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -118,7 +118,7 @@ fun TimelineScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        onNavigateToNotification()
+                        onNavigateToNotifications()
                     }) {
                         Icon(Icons.Default.Notifications, contentDescription = "通知一覧")
                     }
