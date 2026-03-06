@@ -21,10 +21,4 @@ class NotificationRepositoryImpl @Inject constructor(
     override suspend fun markAsRead(userId: String, notificationId: String): Result<Unit> {
         return runCatching { dataSource.markAsRead(userId, notificationId) }
     }
-
-    override suspend fun saveNotification(userId: String, notification: AppNotification): Result<Unit> {
-        return runCatching {
-            dataSource.saveNotification(userId, NotificationDto.fromDomain(notification))
-        }
-    }
 }

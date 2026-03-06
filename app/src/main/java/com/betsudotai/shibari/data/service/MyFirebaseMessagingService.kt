@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import com.betsudotai.shibari.domain.model.AppNotification
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.NotificationRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
@@ -15,8 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,22 +51,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val body = message.notification?.body ?: message.data["body"] ?: ""
 
         showNotification(title, body)
-        saveNotificationToFirestore(title, body)
-    }
-
-    private fun saveNotificationToFirestore(title: String, body: String) {
-        scope.launch {
-            val userId = authRepository.getCurrentUserId() ?: return@launch
-            val notification = AppNotification(
-                id = UUID.randomUUID().toString(),
-                title = title,
-                body = body,
-                isRead = false,
-                createdAt = LocalDateTime.now()
-            )
-            notificationRepository.saveNotification(userId, notification)
-                .onFailure { it.printStackTrace() }
-        }
     }
 
     private fun showNotification(title: String, message: String) {

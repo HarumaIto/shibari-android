@@ -38,8 +38,4 @@ class NotificationRemoteDataSourceImpl @Inject constructor(
         userNotificationsCollection(userId).document(notificationId)
             .update("isRead", true).await()
     }
-
-    override suspend fun saveNotification(userId: String, notification: NotificationDto) {
-        userNotificationsCollection(userId).document(notification.documentId).set(notification).await()
-    }
 }
