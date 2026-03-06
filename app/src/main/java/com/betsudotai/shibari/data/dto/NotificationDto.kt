@@ -14,7 +14,7 @@ data class NotificationDto(
     @PropertyName("body") val body: String = "",
     @PropertyName("senderId") val senderId: String? = null,
     @PropertyName("targetId") val targetId: String? = null,
-    @PropertyName("isRead") val isRead: Boolean = false,
+    @get:PropertyName("isRead") @set:PropertyName("isRead") var isRead: Boolean = false,
     @PropertyName("createdAt") val createdAt: Timestamp? = null
 ) {
     fun toDomain(): AppNotification {
