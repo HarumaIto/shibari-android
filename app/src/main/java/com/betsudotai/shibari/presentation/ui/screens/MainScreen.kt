@@ -1,16 +1,11 @@
 package com.betsudotai.shibari.presentation.ui.screens
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,9 +18,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.betsudotai.shibari.presentation.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(parentNavController: NavHostController, onNavigateToNotifications: () -> Unit) {
+fun MainScreen(parentNavController: NavHostController) {
     val bottomNavController = rememberNavController()
 
     val bottomTabs = listOf(
@@ -35,16 +29,6 @@ fun MainScreen(parentNavController: NavHostController, onNavigateToNotifications
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("縛り") },
-                actions = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Icon(Icons.Default.Notifications, contentDescription = "通知")
-                    }
-                }
-            )
-        },
         bottomBar = {
             NavigationBar {
                 val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -86,8 +70,8 @@ fun MainScreen(parentNavController: NavHostController, onNavigateToNotifications
                 onNavigateToGroup = {
                     parentNavController.navigate(Screen.Group.route)
                 },
-                onNavigateToNotification = {
-                    parentNavController.navigate(Screen.Notification.route)
+                onNavigateToNotifications = {
+                    parentNavController.navigate(Screen.Notifications.route)
                 }
             ) }
             composable(Screen.Profile.route) { ProfileScreen(

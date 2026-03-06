@@ -88,12 +88,7 @@ fun AppNavigation(
         }
 
         composable(Screen.Main.route) {
-            MainScreen(
-                navController,
-                onNavigateToNotifications = {
-                    navController.navigate(Screen.Notifications.route)
-                }
-            )
+            MainScreen(navController)
         }
 
         composable(
