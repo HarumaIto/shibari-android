@@ -15,29 +15,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.betsudotai.shibari.presentation.viewmodel.quest.QuestsUiState
 import com.betsudotai.shibari.presentation.viewmodel.quest.QuestsViewModel
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 @Composable
 fun QuestsScreen(
@@ -109,15 +110,48 @@ fun QuestsScreen(
                                             modifier = Modifier.fillMaxWidth(),
                                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                             colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                                containerColor = if (quest.isCompleted)
+                                                    MaterialTheme.colorScheme.primaryContainer
+                                                else
+                                                    MaterialTheme.colorScheme.surfaceVariant
                                             )
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
-                                                Text(
-                                                    text = quest.title,
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    fontWeight = FontWeight.Bold
-                                                )
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Text(
+                                                        text = quest.title,
+                                                        style = MaterialTheme.typography.titleLarge,
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                    if (quest.isCompleted) {
+                                                        // 期間内クリアバッジ
+                                                        Surface(
+                                                            color = MaterialTheme.colorScheme.primary,
+                                                            shape = MaterialTheme.shapes.small
+                                                        ) {
+                                                            Row(
+                                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                Icon(
+                                                                    imageVector = Icons.Default.CheckCircle,
+                                                                    contentDescription = null,
+                                                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                                                    modifier = Modifier.size(14.dp)
+                                                                )
+                                                                Spacer(modifier = Modifier.width(4.dp))
+                                                                Text(
+                                                                    text = "期間内クリア",
+                                                                    style = MaterialTheme.typography.labelSmall,
+                                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                                 Spacer(modifier = Modifier.height(8.dp))
                                                 Text(
                                                     text = quest.description,
@@ -126,13 +160,24 @@ fun QuestsScreen(
                                                 Spacer(modifier = Modifier.height(16.dp))
 
                                                 // 投稿画面へ遷移するボタン
-                                                Button(
-                                                    onClick = { onNavigateToPost(quest.id) },
-                                                    modifier = Modifier.align(Alignment.End)
-                                                ) {
-                                                    Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(18.dp))
-                                                    Spacer(modifier = Modifier.width(8.dp))
-                                                    Text("証拠を提出")
+                                                if (quest.isCompleted) {
+                                                    OutlinedButton(
+                                                        onClick = { onNavigateToPost(quest.id) },
+                                                        modifier = Modifier.align(Alignment.End)
+                                                    ) {
+                                                        Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                                                        Spacer(modifier = Modifier.width(8.dp))
+                                                        Text("再提出")
+                                                    }
+                                                } else {
+                                                    Button(
+                                                        onClick = { onNavigateToPost(quest.id) },
+                                                        modifier = Modifier.align(Alignment.End)
+                                                    ) {
+                                                        Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                                                        Spacer(modifier = Modifier.width(8.dp))
+                                                        Text("証拠を提出")
+                                                    }
                                                 }
                                             }
                                         }

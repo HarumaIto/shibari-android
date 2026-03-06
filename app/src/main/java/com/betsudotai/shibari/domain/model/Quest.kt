@@ -5,10 +5,11 @@ import com.betsudotai.shibari.domain.value.QuestType
 
 data class Quest(
     val id: String,
-    val groupId: String, // Add groupId here
+    val groupId: String,
     val title: String,
     val type: QuestType,
     val frequency: QuestFrequency,
     val description: String,
-    val threshold: Int?
+    val threshold: Int?,
+    val isCompleted: Boolean = false
 )

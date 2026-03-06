@@ -85,9 +85,7 @@ class TimelineRepositoryImpl @Inject constructor(
             if (userDto == null || userDto.groupId == null) {
                 throw IllegalStateException("User not found")
             }
-            val groupDto = groupDataSource.getGroupDetails(userDto.groupId)
-                ?: throw IllegalStateException("Group not found")
-            timelineDataSource.updateVote(postId, userId, vote.name, groupDto.memberIds.size)
+            timelineDataSource.updateVote(postId, userId, vote.name)
         }
     }
 
@@ -118,5 +116,9 @@ class TimelineRepositoryImpl @Inject constructor(
 
             timelineDataSource.addComment(postId, newComment)
         }
+    }
+
+    override suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePost> {
+        return timelineDataSource.getMyPostsForQuests(userId, groupId, questIds).map { it.toDomain() }
     }
 }

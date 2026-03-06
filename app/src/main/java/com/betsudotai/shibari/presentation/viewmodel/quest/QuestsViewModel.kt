@@ -3,8 +3,8 @@ package com.betsudotai.shibari.presentation.viewmodel.quest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.betsudotai.shibari.domain.repository.AuthRepository
-import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
+import com.betsudotai.shibari.domain.usecase.GetMyQuestsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class QuestsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val questRepository: QuestRepository
+    private val getMyQuestsUseCase: GetMyQuestsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<QuestsUiState>(QuestsUiState.Loading)
@@ -48,16 +48,12 @@ class QuestsViewModel @Inject constructor(
                     return@launch
                 }
 
-                val questIds = user.participatingQuestIds
-                if (questIds.isEmpty()) {
-                    // 参加中の縛りがない場合
+                val myQuests = getMyQuestsUseCase(uid, groupId)
+
+                if (myQuests.isEmpty()) {
                     _uiState.value = QuestsUiState.Success(emptyList())
                     return@launch
                 }
-
-                // 全クエストを取得し、自分が参加しているものだけをフィルタリングする
-                val allQuests = questRepository.getAllQuests(groupId) // Pass groupId
-                val myQuests = allQuests.filter { questIds.contains(it.id) }
 
                 val groupedQuests = myQuests
                     .groupBy { it.frequency }

@@ -58,7 +58,7 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
         firestore.collection("timelines").document(postDto.documentId).set(postDto).await()
     }
 
-    override suspend fun updateVote(postId: String, userId: String, vote: String, memberLength: Int) {
+    override suspend fun updateVote(postId: String, userId: String, vote: String) {
         val docRef = firestore.collection("timelines").document(postId)
 
         firestore.runTransaction { transaction ->
@@ -66,18 +66,11 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
             val currentVotes = snapshot.get("votes") as? Map<*, *> ?: emptyMap<String, String>()
 
             // 既に投票済みなら何もしない（または上書き）
-            // ここでは簡易的に「承認数の再計算」を行う
             val newVotes = currentVotes.toMutableMap()
             newVotes[userId] = vote
 
-            val approvalCount = newVotes.values.count { it == "APPROVE" }
-
-            val newStatus = if (approvalCount >= memberLength / 2) "approved" else "pending"
-
             transaction.update(docRef, mapOf(
                 "votes" to newVotes,
-                "approvalCount" to approvalCount,
-                "status" to newStatus
             ))
         }.await()
     }
@@ -102,5 +95,15 @@ class TimelineRemoteDataSourceImpl @Inject constructor(
     override suspend fun addComment(postId: String, commentDto: CommentDto) {
         firestore.collection("timelines").document(postId)
             .collection("comments").document(commentDto.documentId).set(commentDto).await()
+    }
+
+    override suspend fun getMyPostsForQuests(userId: String, groupId: String, questIds: List<String>): List<TimelinePostDto> {
+        if (questIds.isEmpty()) return emptyList()
+        return firestore.collection("timelines")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("groupId", groupId)
+            .whereIn("questId", questIds)
+            .get().await()
+            .documents.mapNotNull { it.toObject(TimelinePostDto::class.java) }
     }
 }

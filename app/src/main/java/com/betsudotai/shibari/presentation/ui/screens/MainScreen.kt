@@ -82,6 +82,12 @@ fun MainScreen(parentNavController: NavHostController, onNavigateToNotifications
             composable(Screen.Timeline.route) { TimelineScreen(
                 onNavigateToComment = { postId ->
                     parentNavController.navigate(Screen.Comment.createRoute(postId))
+                },
+                onNavigateToGroup = {
+                    parentNavController.navigate(Screen.Group.route)
+                },
+                onNavigateToNotification = {
+                    parentNavController.navigate(Screen.Notification.route)
                 }
             ) }
             composable(Screen.Profile.route) { ProfileScreen(
