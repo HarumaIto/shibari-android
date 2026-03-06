@@ -118,6 +118,7 @@ fun AppNavigation(
 
         composable(Screen.Group.route) {
             GroupScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToGroupQuests = {
                     navController.navigate(Screen.GroupQuestList.route)
                 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ContentCopy
@@ -56,6 +57,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 @Composable
 fun GroupScreen(
     viewModel: GroupViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
     onNavigateToGroupQuests: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -65,7 +67,17 @@ fun GroupScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("グループ") })
+            TopAppBar(
+                title = { Text("グループ") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "戻る"
+                        )
+                    }
+                }
+            )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
