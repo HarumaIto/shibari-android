@@ -30,4 +30,10 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
 
     data object Group: Screen("group")
     data object Notifications: Screen("notifications")
+
+    data object GroupQuestList: Screen("group_quests")
+    data object QuestForm: Screen("quest_form?questId={questId}") {
+        fun createRoute(questId: String? = null) =
+            if (questId != null) "quest_form?questId=$questId" else "quest_form"
+    }
 }
