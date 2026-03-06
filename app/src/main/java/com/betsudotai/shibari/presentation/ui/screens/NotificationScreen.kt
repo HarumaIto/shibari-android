@@ -1,7 +1,6 @@
 package com.betsudotai.shibari.presentation.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,14 +87,7 @@ fun NotificationScreen(
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(state.notifications, key = { it.id }) { notification ->
-                                NotificationItem(
-                                    notification = notification,
-                                    onClick = {
-                                        if (!notification.isRead) {
-                                            viewModel.markAsRead(notification.id)
-                                        }
-                                    }
-                                )
+                                NotificationItem(notification = notification)
                                 HorizontalDivider()
                             }
                         }
@@ -107,10 +99,7 @@ fun NotificationScreen(
 }
 
 @Composable
-private fun NotificationItem(
-    notification: AppNotification,
-    onClick: () -> Unit
-) {
+private fun NotificationItem(notification: AppNotification) {
     val formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm")
     val backgroundColor = if (notification.isRead) Color.Transparent
     else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -119,7 +108,6 @@ private fun NotificationItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.Top
     ) {

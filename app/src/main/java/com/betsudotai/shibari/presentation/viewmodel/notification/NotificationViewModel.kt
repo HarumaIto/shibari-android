@@ -8,7 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,21 +31,22 @@ class NotificationViewModel @Inject constructor(
                 return@launch
             }
 
-            notificationRepository.getNotificationsStream(userId)
-                .catch { e ->
+            notificationRepository.getNotifications(userId)
+                .onSuccess { notifications ->
+                    // Display notifications with their original isRead values so unread indicators
+                    // are visible while the page is open.
+                    _uiState.value = NotificationUiState.Success(notifications)
+
+                    // Immediately mark all unread notifications as read in Firestore in the background.
+                    val unreadIds = notifications.filter { !it.isRead }.map { it.id }
+                    if (unreadIds.isNotEmpty()) {
+                        notificationRepository.markAllAsRead(userId, unreadIds)
+                            .onFailure { it.printStackTrace() }
+                    }
+                }
+                .onFailure { e ->
                     _uiState.value = NotificationUiState.Error(e.message ?: "エラーが発生しました")
                 }
-                .collect { notifications ->
-                    _uiState.value = NotificationUiState.Success(notifications)
-                }
-        }
-    }
-
-    fun markAsRead(notificationId: String) {
-        viewModelScope.launch {
-            val userId = authRepository.getCurrentUserId() ?: return@launch
-            notificationRepository.markAsRead(userId, notificationId)
-                .onFailure { it.printStackTrace() }
         }
     }
 }

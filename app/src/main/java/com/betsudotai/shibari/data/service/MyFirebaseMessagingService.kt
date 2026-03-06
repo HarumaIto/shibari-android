@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.betsudotai.shibari.domain.repository.AuthRepository
-import com.betsudotai.shibari.domain.repository.NotificationRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -24,9 +23,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var userRepository: UserRepository
-
-    @Inject
-    lateinit var notificationRepository: NotificationRepository
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
