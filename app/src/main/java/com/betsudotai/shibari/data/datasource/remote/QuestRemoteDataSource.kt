@@ -5,4 +5,6 @@ import com.betsudotai.shibari.data.dto.QuestDto
 interface QuestRemoteDataSource {
     suspend fun fetchAllQuests(groupId: String): List<QuestDto>
     suspend fun fetchQuest(id: String): QuestDto?
+    suspend fun createQuest(questDto: QuestDto): QuestDto
+    suspend fun updateQuest(questDto: QuestDto)
 }

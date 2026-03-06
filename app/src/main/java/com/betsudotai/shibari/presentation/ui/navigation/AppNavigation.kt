@@ -10,11 +10,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.betsudotai.shibari.presentation.ui.screens.AuthScreen
 import com.betsudotai.shibari.presentation.ui.screens.CommentScreen
+import com.betsudotai.shibari.presentation.ui.screens.GroupQuestListScreen
+import com.betsudotai.shibari.presentation.ui.screens.GroupScreen
 import com.betsudotai.shibari.presentation.ui.screens.MainScreen
 import com.betsudotai.shibari.presentation.ui.screens.NotificationScreen
 import com.betsudotai.shibari.presentation.ui.screens.PostScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileEditScreen
 import com.betsudotai.shibari.presentation.ui.screens.ProfileSetupScreen
+import com.betsudotai.shibari.presentation.ui.screens.QuestFormScreen
 import com.betsudotai.shibari.presentation.ui.screens.QuestSelectionScreen
 import com.betsudotai.shibari.presentation.ui.screens.GroupSelectionScreen
 
@@ -110,6 +113,36 @@ fun AppNavigation(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable(Screen.Group.route) {
+            GroupScreen(
+                onNavigateToGroupQuests = {
+                    navController.navigate(Screen.GroupQuestList.route)
+                }
+            )
+        }
+
+        composable(Screen.GroupQuestList.route) {
+            GroupQuestListScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToQuestForm = { questId ->
+                    navController.navigate(Screen.QuestForm.createRoute(questId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.QuestForm.route,
+            arguments = listOf(navArgument("questId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) {
+            QuestFormScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
