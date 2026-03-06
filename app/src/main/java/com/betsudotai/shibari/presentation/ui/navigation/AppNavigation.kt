@@ -2,6 +2,7 @@ package com.betsudotai.shibari.presentation.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.vector.Group
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -111,6 +112,10 @@ fun AppNavigation(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Screen.Group.route) {
+            Group() { }
         }
 
         composable(Screen.Notifications.route) {
