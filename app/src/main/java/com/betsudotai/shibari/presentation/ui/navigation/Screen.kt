@@ -27,4 +27,7 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
     data object Quests: Screen("quests", "クエスト", Icons.Default.List)
     data object Timeline: Screen("timeline", "タイムライン", Icons.Default.Home)
     data object  Profile: Screen("profile", "プロフィール", Icons.Default.Person)
+
+    data object Group: Screen("group")
+    data object Notification: Screen("notification")
 }
