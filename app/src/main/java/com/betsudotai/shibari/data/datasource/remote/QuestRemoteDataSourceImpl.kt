@@ -26,4 +26,15 @@ class QuestRemoteDataSourceImpl @Inject constructor(
         val doc = firestore.collection("quests").document(id).get().await()
         return doc.toObject(QuestDto::class.java)
     }
+
+    override suspend fun createQuest(questDto: QuestDto): QuestDto {
+        val ref = firestore.collection("quests").document()
+        ref.set(questDto).await()
+        return questDto.copy(documentId = ref.id)
+    }
+
+    override suspend fun updateQuest(questDto: QuestDto) {
+        require(questDto.documentId.isNotEmpty()) { "Quest documentId must not be empty for update" }
+        firestore.collection("quests").document(questDto.documentId).set(questDto).await()
+    }
 }

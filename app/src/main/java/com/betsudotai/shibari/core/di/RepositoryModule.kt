@@ -2,6 +2,7 @@ package com.betsudotai.shibari.core.di
 
 import com.betsudotai.shibari.data.repository.AuthRepositoryImpl
 import com.betsudotai.shibari.data.repository.GroupRepositoryImpl
+import com.betsudotai.shibari.data.repository.NotificationRepositoryImpl
 import com.betsudotai.shibari.data.repository.QuestRepositoryImpl
 import com.betsudotai.shibari.data.repository.ReportRepositoryImpl
 import com.betsudotai.shibari.data.repository.TimelineRepositoryImpl
@@ -11,6 +12,7 @@ import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.TimelineRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.betsudotai.shibari.domain.repository.GroupRepository
+import com.betsudotai.shibari.domain.repository.NotificationRepository
 import com.betsudotai.shibari.domain.repository.ReportRepository
 import dagger.Binds
 import dagger.Module
@@ -57,4 +59,10 @@ abstract class RepositoryModule {
     abstract fun bindReportRepository(
         impl: ReportRepositoryImpl
     ): ReportRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
 }
