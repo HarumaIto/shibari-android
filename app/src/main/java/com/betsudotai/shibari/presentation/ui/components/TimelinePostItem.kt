@@ -81,7 +81,7 @@ fun TimelinePostItem(
                     )
                     post.createdAt?.let { date ->
                         Text(
-                            text = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                            text = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -130,7 +130,6 @@ fun TimelinePostItem(
                     videoUri = post.mediaUrl!!,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 500.dp)
                         .background(Color.Black)
                 )
             } else {
@@ -139,7 +138,6 @@ fun TimelinePostItem(
                     contentDescription = "Evidence",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 500.dp)
                         .background(Color.Black),
                     contentScale = ContentScale.Fit
                 )
