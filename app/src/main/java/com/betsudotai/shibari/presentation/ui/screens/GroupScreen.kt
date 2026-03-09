@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,8 +53,12 @@ import com.betsudotai.shibari.presentation.viewmodel.group.GroupViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.tooling.preview.Preview
+import com.betsudotai.shibari.domain.model.Group
+import com.betsudotai.shibari.domain.model.User
+import com.betsudotai.shibari.presentation.ui.theme.ShibariTheme
+import kotlinx.coroutines.CoroutineScope
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(
     viewModel: GroupViewModel = hiltViewModel(),
@@ -65,6 +70,30 @@ fun GroupScreen(
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
+    GroupScreenContent(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        clipboardManager = clipboardManager,
+        scope = scope,
+        onNavigateBack = onNavigateBack,
+        onNavigateToGroupQuests = onNavigateToGroupQuests,
+        loadGroupData = viewModel::loadGroupData,
+        getQuestTitles = viewModel::getQuestTitles
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GroupScreenContent(
+    uiState: GroupUiState,
+    snackbarHostState: SnackbarHostState,
+    clipboardManager: androidx.compose.ui.platform.ClipboardManager,
+    scope: CoroutineScope,
+    onNavigateBack: () -> Unit,
+    onNavigateToGroupQuests: () -> Unit,
+    loadGroupData: () -> Unit,
+    getQuestTitles: (member: User) -> String
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,7 +110,7 @@ fun GroupScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        when (val state = uiState) {
+        when (uiState) {
             is GroupUiState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -101,9 +130,9 @@ fun GroupScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(state.message, color = MaterialTheme.colorScheme.error)
+                        Text(uiState.message, color = MaterialTheme.colorScheme.error)
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.loadGroupData() }) {
+                        Button(onClick = { loadGroupData() }) {
                             Text("再読み込み")
                         }
                     }
@@ -125,14 +154,14 @@ fun GroupScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = state.group.name,
+                                text = uiState.group.name,
                                 style = MaterialTheme.typography.headlineMedium,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = state.group.description,
+                                text = uiState.group.description,
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -180,13 +209,13 @@ fun GroupScreen(
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = state.group.invitationCode,
+                                        text = uiState.group.invitationCode,
                                         style = MaterialTheme.typography.bodyLarge,
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(
                                         onClick = {
-                                            clipboardManager.setText(AnnotatedString(state.group.invitationCode))
+                                            clipboardManager.setText(AnnotatedString(uiState.group.invitationCode))
                                             scope.launch {
                                                 snackbarHostState.showSnackbar("招待コードをコピーしました！")
                                             }
@@ -212,8 +241,8 @@ fun GroupScreen(
                     }
 
                     // メンバーリスト
-                    items(state.members.size) { index ->
-                        val member = state.members[index]
+                    items(uiState.members.size) { index ->
+                        val member = uiState.members[index]
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -242,11 +271,32 @@ fun GroupScreen(
                                 }
                             }
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = member.displayName,
-                                modifier = Modifier.weight(1f)
-                            )
-                            if (member.uid == state.group.ownerId) {
+                            Column{
+                                Text(
+                                    text = member.displayName,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Flag,
+                                        contentDescription = "クエストタイトル",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = getQuestTitles(member),
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                            if (member.uid == uiState.group.ownerId) {
                                 Surface(
                                     color = MaterialTheme.colorScheme.errorContainer,
                                     shape = MaterialTheme.shapes.small
@@ -264,5 +314,41 @@ fun GroupScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GroupScreenContentPreview() {
+    ShibariTheme (
+        darkTheme = true,
+    ) {
+        GroupScreenContent(
+            uiState = GroupUiState.Success(
+                group = Group(),
+                members = listOf(
+                    User(
+                        uid = "test",
+                        displayName = "テストユーザー",
+                        photoUrl = null,
+                        fcmToken = null,
+                        participatingQuestIds = listOf(
+                            "mock_quest_id_1",
+                            "mock_quest_id_2"
+                        ),
+                        groupId = "",
+                        blockedUserIds = listOf()
+                    )
+                ),
+                questMap = mapOf()
+            ),
+            snackbarHostState = remember { SnackbarHostState() },
+            clipboardManager = LocalClipboardManager.current,
+            scope = rememberCoroutineScope(),
+            onNavigateBack = {},
+            onNavigateToGroupQuests = {},
+            loadGroupData = {},
+            getQuestTitles = { user: User -> ""}
+        )
     }
 }
