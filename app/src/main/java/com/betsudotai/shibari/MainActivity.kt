@@ -1,6 +1,8 @@
 package com.betsudotai.shibari
 
 import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -64,5 +66,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        clearNotifications()
+    }
+
+    private fun clearNotifications() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // 通知トレイに残っているこのアプリの通知をすべて消去する
+        notificationManager.cancelAll()
     }
 }
