@@ -89,7 +89,7 @@ fun PostScreen(
                             model = selectedImageUri,
                             contentDescription = "Selected Image",
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Fit
                         )
                     }
                 } else {
