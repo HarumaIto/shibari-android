@@ -28,6 +28,7 @@ import coil3.compose.AsyncImage
 import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.MediaType
 import com.betsudotai.shibari.domain.value.VoteType
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TimelinePostItem(
@@ -78,6 +79,13 @@ fun TimelinePostItem(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    post.createdAt?.let { date ->
+                        Text(
+                            text = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 // ステータスバッジ
@@ -122,7 +130,7 @@ fun TimelinePostItem(
                     videoUri = post.mediaUrl!!,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f) // 正方形
+                        .heightIn(max = 500.dp)
                         .background(Color.Black)
                 )
             } else {
@@ -131,9 +139,9 @@ fun TimelinePostItem(
                     contentDescription = "Evidence",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .heightIn(max = 500.dp)
                         .background(Color.Black),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Fit
                 )
             }
 
