@@ -2,8 +2,10 @@ package com.betsudotai.shibari.presentation.viewmodel.group
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.betsudotai.shibari.domain.model.User
 import com.betsudotai.shibari.domain.repository.AuthRepository
 import com.betsudotai.shibari.domain.repository.GroupRepository
+import com.betsudotai.shibari.domain.repository.QuestRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val questRepository: QuestRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<GroupUiState>(GroupUiState.Loading)
@@ -49,10 +52,21 @@ class GroupViewModel @Inject constructor(
                 val members = group.memberIds.mapNotNull { memberId ->
                     userRepository.getUser(memberId)
                 }
-                _uiState.value = GroupUiState.Success(group, members)
+                val quests = questRepository.getAllQuests(group.id)
+                val questMap = quests.associateBy { it.id }
+                _uiState.value = GroupUiState.Success(group, members, questMap)
             } catch (e: Exception) {
                 _uiState.value = GroupUiState.Error(e.message ?: "データの読み込みに失敗しました")
             }
         }
+    }
+
+    fun getQuestTitles(member: User): String {
+        val currentState = uiState.value
+        if (currentState !is GroupUiState.Success) return ""
+
+        return member.participatingQuestIds.mapNotNull { questId ->
+            currentState.questMap[questId]?.title
+        }.joinToString(", ")
     }
 }
