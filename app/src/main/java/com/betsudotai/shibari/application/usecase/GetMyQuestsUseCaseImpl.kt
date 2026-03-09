@@ -6,7 +6,7 @@ import com.betsudotai.shibari.domain.repository.TimelineRepository
 import com.betsudotai.shibari.domain.repository.UserRepository
 import com.betsudotai.shibari.domain.usecase.GetMyQuestsUseCase
 import com.betsudotai.shibari.domain.value.QuestFrequency
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.WeekFields
 import javax.inject.Inject
 
@@ -43,8 +43,8 @@ class GetMyQuestsUseCaseImpl @Inject constructor(
         }
     }
 
-    private fun isInCurrentPeriod(date: LocalDate, frequency: QuestFrequency): Boolean {
-        val today = LocalDate.now()
+    private fun isInCurrentPeriod(date: LocalDateTime, frequency: QuestFrequency): Boolean {
+        val today = LocalDateTime.now()
         return when (frequency) {
             QuestFrequency.ALWAYS -> false
             QuestFrequency.DAILY -> date == today

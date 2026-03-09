@@ -10,7 +10,7 @@ import com.betsudotai.shibari.domain.value.QuestType
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 data class TimelinePostDto(
@@ -59,8 +59,8 @@ data class TimelinePostDto(
                 try { VoteType.valueOf(it.value.uppercase()) } catch (e: Exception) { VoteType.APPROVE }
             },
             // Timestamp -> Date
-            createdAt = createdAt?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
-                ?: LocalDate.now()
+            createdAt = createdAt?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDateTime()
+                ?: LocalDateTime.now()
         )
     }
 }
