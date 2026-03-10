@@ -9,8 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -38,5 +40,22 @@ class MainViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    init {
+        viewModelScope.launch {
+            authRepository.userIdFlow
+                .distinctUntilChanged()
+                .collect { userId ->
+                    if (userId != null) {
+                        runCatching {
+                            val token = authRepository.getFCMToken()
+                            if (token != null) {
+                                userRepository.updateFcmToken(userId, token)
+                            }
+                        }
+                    }
+                }
+        }
+    }
 }
 
