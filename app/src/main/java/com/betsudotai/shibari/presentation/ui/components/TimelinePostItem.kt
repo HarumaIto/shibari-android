@@ -1,6 +1,8 @@
 package com.betsudotai.shibari.presentation.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.betsudotai.shibari.domain.model.TimelinePost
@@ -152,33 +155,91 @@ fun TimelinePostItem(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
+                if (post.latestComments.isNotEmpty()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        post.latestComments.forEach { commentText ->
+                            Text(
+                                text = commentText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                val previewText = when {
+                    post.commentCount > post.latestComments.size -> "コメント ${post.commentCount} 件をすべて見る"
+                    post.commentCount == 0 -> "最初のコメントを書く..."
+                    else -> null
+                }
+
+                if (previewText != null) {
+                    Text(
+                        text = previewText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        modifier = Modifier
+                            .clickable { onCommentClick(post.id) }
+                            .padding(vertical = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // ★追加：コメントアイコンボタン
-                    IconButton(onClick = { onCommentClick(post.id) }) {
+                    OutlinedButton(
+                        onClick = { onCommentClick(post.id) },
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
                         Icon(Icons.Default.ChatBubbleOutline, contentDescription = "コメント")
+                        if (post.commentCount > 0) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = post.commentCount.toString(),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // 否認ボタン（iOSのタクティカルレッド相当）
+                    OutlinedButton(
+                        onClick = { onVote(post.id, VoteType.REJECT) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                     ) {
-                        Text(
-                            text = "承認: ${post.approvalCount}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                        IconButton(onClick = { onVote(post.id, VoteType.REJECT) }) {
-                            Icon(Icons.Default.ThumbDown, contentDescription = "Reject", tint = Color.Gray)
-                        }
-                        FilledTonalButton(onClick = { onVote(post.id, VoteType.APPROVE) }) {
-                            Icon(Icons.Default.ThumbUp, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("承認")
-                        }
+                        Icon(Icons.Default.ThumbDown, contentDescription = "Reject")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        // ★ 新しく追加した rejectCount を表示
+                        Text("否認 (${post.rejectCount})")
+                    }
+
+                    // 承認ボタン（iOSのネオングリーン相当）
+                    OutlinedButton(
+                        onClick = { onVote(post.id, VoteType.APPROVE) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = androidx.compose.ui.graphics.Color(0xFF00C853) // ネオングリーン
+                        ),
+                        border = BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFF00C853).copy(alpha = 0.5f)),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        Icon(Icons.Default.ThumbUp, contentDescription = "Approve")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("承認 (${post.approvalCount})")
                     }
                 }
             }
