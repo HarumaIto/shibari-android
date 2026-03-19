@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.betsudotai.shibari.presentation.ui.components.TimelinePostItem
@@ -129,7 +130,6 @@ fun TimelineScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             when (val state = uiState) {
                 is TimelineUiState.Loading -> {
@@ -151,7 +151,8 @@ fun TimelineScreen(
                         )
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = paddingValues
                         ) {
                             items(state.posts.size) { index ->
                                 val post = state.posts[index]
