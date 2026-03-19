@@ -29,11 +29,15 @@ data class TimelinePostDto(
 
     @PropertyName("status") val status: String = "pending",
     @PropertyName("approvalCount") val approvalCount: Int = 0,
+    @PropertyName("rejectCount") val rejectCount: Int? = 0,
 
     // 誰が投票したか: Map<UserId, VoteTypeString>
     @PropertyName("votes") val votes: Map<String, String> = emptyMap(),
 
-    @PropertyName("createdAt") val createdAt: Timestamp? = null
+    @PropertyName("createdAt") val createdAt: Timestamp? = null,
+
+    @PropertyName("commentCount") val commentCount: Int? = 0,
+    @PropertyName("latestComments") val latestComments: List<String>? = emptyList()
 ) {
     fun toDomain(): TimelinePost {
         // 安全に変換するロジック
@@ -55,12 +59,15 @@ data class TimelinePostDto(
             comment = comment,
             status = try { PostStatus.valueOf(status.uppercase()) } catch (e: Exception) { PostStatus.PENDING },
             approvalCount = approvalCount,
+            rejectCount = rejectCount ?: 0,
             votes = votes.mapValues {
                 try { VoteType.valueOf(it.value.uppercase()) } catch (e: Exception) { VoteType.APPROVE }
             },
             // Timestamp -> Date
             createdAt = createdAt?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDateTime()
-                ?: LocalDateTime.now()
+                ?: LocalDateTime.now(),
+            commentCount = commentCount ?: 0,
+            latestComments = latestComments ?: emptyList(),
         )
     }
 }

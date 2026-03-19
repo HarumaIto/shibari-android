@@ -19,6 +19,9 @@ data class TimelinePost(
     val comment: String?,
     val status: PostStatus,
     val approvalCount: Int,
+    val rejectCount: Int,
     val votes: Map<String, VoteType>, // user_uid to vote type
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
+    val commentCount: Int,
+    val latestComments: List<String>
 )
