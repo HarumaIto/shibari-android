@@ -31,6 +31,7 @@ import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.MediaType
 import com.betsudotai.shibari.domain.value.VoteType
 import java.time.format.DateTimeFormatter
+import com.betsudotai.shibari.presentation.ui.components.AiJudgmentDisplay
 
 @Composable
 fun TimelinePostItem(
@@ -50,12 +51,15 @@ fun TimelinePostItem(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             // --- Header: ユーザー情報 & クエスト名 ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
+                    .padding(horizontal = 12.dp),
 
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -127,34 +131,42 @@ fun TimelinePostItem(
             }
 
             // --- Media: メイン画像 ---
-            if (post.mediaType == MediaType.VIDEO) {
-                VideoPlayer(
-                    videoUri = post.mediaUrl!!,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black)
-                )
-            } else {
-                AsyncImage(
-                    model = post.mediaUrl,
-                    contentDescription = "Evidence",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black),
-                    contentScale = ContentScale.Fit
-                )
+            Column {
+                if (post.mediaType == MediaType.VIDEO) {
+                    VideoPlayer(
+                        videoUri = post.mediaUrl!!,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Black)
+                    )
+                } else {
+                    AsyncImage(
+                        model = post.mediaUrl,
+                        contentDescription = "Evidence",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Black),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                if (post.comment != null && post.comment.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = post.comment,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
+            }
+
+            // --- AI Judgment Area ---
+            post.aiJudgment?.let { aiJudgment ->
+                AiJudgmentDisplay(aiJudgment = aiJudgment)
             }
 
             // --- Footer: コメント & アクション ---
-            Column(modifier = Modifier.padding(12.dp)) {
-                if (post.comment != null && post.comment.isNotEmpty()) {
-                    Text(
-                        text = post.comment,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
+            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                 if (post.latestComments.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         post.latestComments.forEach { commentText ->
@@ -226,6 +238,8 @@ fun TimelinePostItem(
                         // ★ 新しく追加した rejectCount を表示
                         Text("否認 (${post.rejectCount})")
                     }
+
+                    Spacer(modifier = Modifier.width(width = 8.dp))
 
                     // 承認ボタン（iOSのネオングリーン相当）
                     OutlinedButton(
