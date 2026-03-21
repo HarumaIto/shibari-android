@@ -2,6 +2,8 @@ package com.betsudotai.shibari.data.dto
 
 import com.betsudotai.shibari.domain.value.PostStatus
 import com.betsudotai.shibari.domain.model.TimelinePost
+import com.betsudotai.shibari.domain.model.timeline.AiJudgment
+import com.betsudotai.shibari.domain.value.JudgmentResult
 import com.betsudotai.shibari.domain.model.timeline.AuthorSnapshot
 import com.betsudotai.shibari.domain.model.timeline.QuestSnapshot
 import com.betsudotai.shibari.domain.value.VoteType
@@ -17,9 +19,8 @@ data class TimelinePostDto(
     @DocumentId val documentId: String = "",
     @PropertyName("userId") val userId: String = "",
     @PropertyName("questId") val questId: String = "",
-    @PropertyName("groupId") val groupId: String = "", // Add groupId here
+    @PropertyName("groupId") val groupId: String = "",
 
-    // スナップショット (Mapとして保存される)
     @PropertyName("author") val author: Map<String, String?> = emptyMap(),
     @PropertyName("quest") val quest: Map<String, String> = emptyMap(),
 
@@ -31,21 +32,21 @@ data class TimelinePostDto(
     @PropertyName("approvalCount") val approvalCount: Int = 0,
     @PropertyName("rejectCount") val rejectCount: Int? = 0,
 
-    // 誰が投票したか: Map<UserId, VoteTypeString>
     @PropertyName("votes") val votes: Map<String, String> = emptyMap(),
 
     @PropertyName("createdAt") val createdAt: Timestamp? = null,
 
     @PropertyName("commentCount") val commentCount: Int? = 0,
-    @PropertyName("latestComments") val latestComments: List<String>? = emptyList()
+    @PropertyName("latestComments") val latestComments: List<String>? = emptyList(),
+
+    @PropertyName("aiJudgment") val aiJudgment: Map<String, Any?>? = null
 ) {
     fun toDomain(): TimelinePost {
-        // 安全に変換するロジック
         return TimelinePost(
             id = documentId,
             userId = userId,
             questId = questId,
-            groupId = groupId, // Map groupId here
+            groupId = groupId,
             author = AuthorSnapshot(
                 displayName = author["displayName"] ?: "Unknown",
                 photoUrl = author["photoUrl"]
@@ -63,11 +64,29 @@ data class TimelinePostDto(
             votes = votes.mapValues {
                 try { VoteType.valueOf(it.value.uppercase()) } catch (e: Exception) { VoteType.APPROVE }
             },
-            // Timestamp -> Date
             createdAt = createdAt?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDateTime()
                 ?: LocalDateTime.now(),
             commentCount = commentCount ?: 0,
             latestComments = latestComments ?: emptyList(),
+            aiJudgment = aiJudgment?.let { aiJudgmentMap ->
+                val judgedAtTimestamp = aiJudgmentMap["judgedAt"] as? Timestamp
+                val reasonText = aiJudgmentMap["reason"] as? String
+                val resultString = aiJudgmentMap["result"] as? String
+
+                if (judgedAtTimestamp != null && reasonText != null && resultString != null) {
+                    AiJudgment(
+                        judgedAt = judgedAtTimestamp.toDate(),
+                        reason = reasonText,
+                        result = try {
+                            JudgmentResult.valueOf(resultString.uppercase())
+                        } catch (e: Exception) {
+                            JudgmentResult.UNKNOWN
+                        }
+                    )
+                } else {
+                    null
+                }
+            }
         )
     }
 }

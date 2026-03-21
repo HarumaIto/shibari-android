@@ -1,5 +1,6 @@
 package com.betsudotai.shibari.domain.model
 
+import com.betsudotai.shibari.domain.model.timeline.AiJudgment
 import com.betsudotai.shibari.domain.model.timeline.AuthorSnapshot
 import com.betsudotai.shibari.domain.model.timeline.QuestSnapshot
 import com.betsudotai.shibari.domain.value.MediaType
@@ -23,5 +24,6 @@ data class TimelinePost(
     val votes: Map<String, VoteType>, // user_uid to vote type
     val createdAt: LocalDateTime?,
     val commentCount: Int,
-    val latestComments: List<String>
+    val latestComments: List<String>,
+    val aiJudgment: AiJudgment?
 )
