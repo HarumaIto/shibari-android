@@ -1,18 +1,34 @@
 package com.betsudotai.shibari.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,12 +42,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.betsudotai.shibari.domain.model.TimelinePost
 import com.betsudotai.shibari.domain.value.MediaType
 import com.betsudotai.shibari.domain.value.VoteType
+import com.betsudotai.shibari.presentation.ui.theme.TimelineDivider
+import com.betsudotai.shibari.presentation.ui.theme.VoteApproveColor
+import com.betsudotai.shibari.presentation.ui.theme.VoteRejectColor
 import java.time.format.DateTimeFormatter
-import com.betsudotai.shibari.presentation.ui.components.AiJudgmentDisplay
 
 @Composable
 fun TimelinePostItem(
@@ -44,26 +63,31 @@ fun TimelinePostItem(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    val myVote = post.votes[currentUserId]
+    val isApproveActive = myVote == VoteType.APPROVE
+    val isRejectActive = myVote == VoteType.REJECT
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 14.dp, vertical = 7.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Column(
             modifier = Modifier.padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // --- Header: ユーザー情報 & クエスト名 ---
+            // --- Header: ユーザー情報 & ステータスバッジ ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-
+                    .padding(horizontal = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // アイコン（なければグレーの円）
                 AsyncImage(
                     model = post.author.photoUrl,
                     contentDescription = null,
@@ -74,7 +98,7 @@ fun TimelinePostItem(
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = post.author.displayName,
                         style = MaterialTheme.typography.titleSmall,
@@ -83,29 +107,25 @@ fun TimelinePostItem(
                     Text(
                         text = "縛り: ${post.quest.title}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                    post.createdAt?.let { date ->
-                        Text(
-                            text = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                // ステータスバッジ
-                Text(
-                    text = post.status.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier
-                        .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
+                Spacer(modifier = Modifier.width(8.dp))
+                StatusBadge(status = post.status)
                 if (post.userId != currentUserId) {
                     Box {
-                        IconButton(onClick = { expanded = true}) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "メニュー")
+                        IconButton(
+                            onClick = { expanded = true },
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                Icons.Default.MoreVert,
+                                contentDescription = "メニュー",
+                                modifier = Modifier.size(18.dp),
+                            )
                         }
                         DropdownMenu(
                             expanded = expanded,
@@ -119,7 +139,12 @@ fun TimelinePostItem(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("このユーザーをブロック", color = MaterialTheme.colorScheme.error) },
+                                text = {
+                                    Text(
+                                        "このユーザーをブロック",
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                },
                                 onClick = {
                                     expanded = false
                                     onBlockClick(post.userId)
@@ -131,13 +156,15 @@ fun TimelinePostItem(
             }
 
             // --- Media: メイン画像 ---
-            Column {
+            Column(modifier = Modifier.padding(horizontal = 14.dp)) {
+                val mediaShape = RoundedCornerShape(12.dp)
                 if (post.mediaType == MediaType.VIDEO) {
                     VideoPlayer(
                         videoUri = post.mediaUrl!!,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Black)
+                            .clip(mediaShape)
+                            .background(MaterialTheme.colorScheme.background)
                     )
                 } else {
                     AsyncImage(
@@ -145,7 +172,8 @@ fun TimelinePostItem(
                         contentDescription = "Evidence",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Black),
+                            .clip(mediaShape)
+                            .background(MaterialTheme.colorScheme.background),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -155,7 +183,16 @@ fun TimelinePostItem(
                     Text(
                         text = post.comment,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
+
+                // 投稿日時を画像下に控えめに配置
+                post.createdAt?.let { date ->
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = date.format(DateTimeFormatter.ofPattern("MM/dd HH:mm")),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -166,7 +203,7 @@ fun TimelinePostItem(
             }
 
             // --- Footer: コメント & アクション ---
-            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 14.dp)) {
                 if (post.latestComments.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         post.latestComments.forEach { commentText ->
@@ -202,61 +239,97 @@ fun TimelinePostItem(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
-                        onClick = { onCommentClick(post.id) },
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    // コメントボタン（アイコンのみのピル）
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .border(1.5.dp, TimelineDivider, RoundedCornerShape(20.dp))
+                            .clickable { onCommentClick(post.id) }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Default.ChatBubbleOutline, contentDescription = "コメント")
+                        Icon(
+                            Icons.Default.ChatBubbleOutline,
+                            contentDescription = "コメント",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         if (post.commentCount > 0) {
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = post.commentCount.toString(),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // 否認ボタン（iOSのタクティカルレッド相当）
-                    OutlinedButton(
+                    // 否認ボタン（✗アイコン+カウント）
+                    VotePill(
+                        icon = Icons.Default.Close,
+                        contentDescription = "否認",
+                        count = post.rejectCount,
+                        active = isRejectActive,
+                        color = VoteRejectColor,
                         onClick = { onVote(post.id, VoteType.REJECT) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Icon(Icons.Default.ThumbDown, contentDescription = "Reject")
-                        Spacer(modifier = Modifier.width(4.dp))
-                        // ★ 新しく追加した rejectCount を表示
-                        Text("否認 (${post.rejectCount})")
-                    }
+                    )
 
-                    Spacer(modifier = Modifier.width(width = 8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                    // 承認ボタン（iOSのネオングリーン相当）
-                    OutlinedButton(
+                    // 承認ボタン（✓アイコン+カウント）
+                    VotePill(
+                        icon = Icons.Default.Check,
+                        contentDescription = "承認",
+                        count = post.approvalCount,
+                        active = isApproveActive,
+                        color = VoteApproveColor,
                         onClick = { onVote(post.id, VoteType.APPROVE) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = androidx.compose.ui.graphics.Color(0xFF00C853) // ネオングリーン
-                        ),
-                        border = BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFF00C853).copy(alpha = 0.5f)),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Icon(Icons.Default.ThumbUp, contentDescription = "Approve")
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("承認 (${post.approvalCount})")
-                    }
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun VotePill(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    count: Int,
+    active: Boolean,
+    color: Color,
+    onClick: () -> Unit,
+) {
+    val border = if (active) color else TimelineDivider
+    val bg = if (active) color.copy(alpha = 0.13f) else Color.Transparent
+    val iconTint = if (active) color else MaterialTheme.colorScheme.onSurfaceVariant
+    val textColor = if (active) color else MaterialTheme.colorScheme.onSurfaceVariant
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .border(1.5.dp, border, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(16.dp),
+            tint = iconTint,
+        )
+        Text(
+            text = count.toString(),
+            fontSize = 13.sp,
+            fontWeight = if (active) FontWeight.Bold else FontWeight.Normal,
+            color = textColor,
+        )
     }
 }
