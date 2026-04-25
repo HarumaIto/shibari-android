@@ -6,11 +6,27 @@ import androidx.compose.ui.graphics.Color
 val TacticalRedLight = Color(0xFFD32F2F)
 val TacticalRedDark = Color(0xFFEF5350)
 
-// セカンダリー：実績やバッジに使うゴールド/アンバー
-val AchievementGold = Color(0xFFFFB300)
+// セカンダリー：実績やバッジに使うゴールド/アンバー（縛りアクセント）
+val AchievementGold = Color(0xFFE8A44A)
 
 // ターシャリー（第3の色）：成功・承認・クリアを表すネオングリーン
 val SuccessNeonGreen = Color(0xFF00E676)
+
+// --- タイムライン用デザイントークン ---
+// ステータスバッジ
+val StatusPendingBg     = Color(0xFF2A2218)
+val StatusPendingFg     = Color(0xFFC8942A)
+val StatusApprovedBg    = Color(0xFF1A3020)
+val StatusApprovedFg    = Color(0xFF3DD68C)
+val StatusRejectedBg    = Color(0xFF2D1A1A)
+val StatusRejectedFg    = Color(0xFFF06060)
+
+// 投票・AI判定・シート
+val VoteApproveColor    = Color(0xFF3DD68C)
+val VoteRejectColor     = Color(0xFFF06060)
+val TimelineSheetBg     = Color(0xFF1A2840)
+val TimelineSheetBtnBg  = Color(0xFF1E2E40)
+val TimelineDivider     = Color(0xFF2A3A4A)
 
 // --- 背景・サーフェス（表面）の色 ---
 
