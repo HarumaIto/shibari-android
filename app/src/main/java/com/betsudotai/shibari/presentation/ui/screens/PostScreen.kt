@@ -35,6 +35,11 @@ import com.betsudotai.shibari.presentation.ui.components.VideoPlayer
 import com.betsudotai.shibari.presentation.viewmodel.post.PostEvent
 import com.betsudotai.shibari.presentation.viewmodel.post.PostViewModel
 
+private enum class CameraAction {
+    TakePicture,
+    CaptureVideo
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
@@ -53,31 +58,35 @@ fun PostScreen(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> viewModel.onImageSelected(uri) }
     )
-    var pendingCaptureUri by remember { mutableStateOf<Uri?>(null) }
+    var pendingCaptureUriString by rememberSaveable { mutableStateOf<String?>(null) }
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                viewModel.onImageSelected(pendingCaptureUri)
+                viewModel.onImageSelected(pendingCaptureUriString?.let(Uri::parse))
             }
-            pendingCaptureUri = null
+            pendingCaptureUriString = null
         }
     )
     val captureVideoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo(),
         onResult = { success ->
             if (success) {
-                viewModel.onImageSelected(pendingCaptureUri)
+                viewModel.onImageSelected(pendingCaptureUriString?.let(Uri::parse))
             }
-            pendingCaptureUri = null
+            pendingCaptureUriString = null
         }
     )
-    var pendingCameraAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var pendingCameraAction by rememberSaveable { mutableStateOf<CameraAction?>(null) }
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
             if (granted) {
-                pendingCameraAction?.invoke()
+                when (pendingCameraAction) {
+                    CameraAction.TakePicture -> launchTakePicture()
+                    CameraAction.CaptureVideo -> launchCaptureVideo()
+                    null -> Unit
+                }
             }
             pendingCameraAction = null
         }
@@ -86,23 +95,26 @@ fun PostScreen(
 
     fun launchTakePicture() {
         val uri = FileUtil.createImageCaptureUri(context)
-        pendingCaptureUri = uri
+        pendingCaptureUriString = uri.toString()
         takePictureLauncher.launch(uri)
     }
 
     fun launchCaptureVideo() {
         val uri = FileUtil.createVideoCaptureUri(context)
-        pendingCaptureUri = uri
+        pendingCaptureUriString = uri.toString()
         captureVideoLauncher.launch(uri)
     }
 
-    fun ensureCameraPermissionAndRun(action: () -> Unit) {
+    fun ensureCameraPermissionAndRun(action: CameraAction) {
         val granted = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
         if (granted) {
-            action()
+            when (action) {
+                CameraAction.TakePicture -> launchTakePicture()
+                CameraAction.CaptureVideo -> launchCaptureVideo()
+            }
         } else {
             pendingCameraAction = action
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -225,7 +237,7 @@ fun PostScreen(
                     leadingContent = { Icon(Icons.Default.PhotoCamera, null) },
                     modifier = Modifier.clickable {
                         showSourceSheet = false
-                        ensureCameraPermissionAndRun { launchTakePicture() }
+                        ensureCameraPermissionAndRun(CameraAction.TakePicture)
                     }
                 )
                 ListItem(
@@ -233,7 +245,7 @@ fun PostScreen(
                     leadingContent = { Icon(Icons.Default.Videocam, null) },
                     modifier = Modifier.clickable {
                         showSourceSheet = false
-                        ensureCameraPermissionAndRun { launchCaptureVideo() }
+                        ensureCameraPermissionAndRun(CameraAction.CaptureVideo)
                     }
                 )
                 ListItem(

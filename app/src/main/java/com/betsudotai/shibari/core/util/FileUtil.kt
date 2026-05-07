@@ -26,18 +26,16 @@ object FileUtil {
     }
 
     fun createImageCaptureUri(context: Context): Uri {
-        val timestamp = System.currentTimeMillis()
-        val file = File(context.cacheDir, "capture_${timestamp}.jpg")
-        return FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
+        return createCaptureUri(context, "jpg")
     }
 
     fun createVideoCaptureUri(context: Context): Uri {
+        return createCaptureUri(context, "mp4")
+    }
+
+    private fun createCaptureUri(context: Context, extension: String): Uri {
         val timestamp = System.currentTimeMillis()
-        val file = File(context.cacheDir, "capture_${timestamp}.mp4")
+        val file = File(context.cacheDir, "capture_${timestamp}.$extension")
         return FileProvider.getUriForFile(
             context,
             "${context.packageName}.fileprovider",
