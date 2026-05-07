@@ -36,6 +36,10 @@ object FileUtil {
     private fun createCaptureUri(context: Context, extension: String): Uri {
         val timestamp = System.currentTimeMillis()
         val file = File(context.cacheDir, "capture_${timestamp}.$extension")
+        file.parentFile?.mkdirs()
+        if (!file.exists()) {
+            file.createNewFile()
+        }
         return FileProvider.getUriForFile(
             context,
             "${context.packageName}.fileprovider",

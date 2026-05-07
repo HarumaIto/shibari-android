@@ -58,23 +58,23 @@ fun PostScreen(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> viewModel.onImageSelected(uri) }
     )
-    var pendingCaptureUriString by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingCaptureUri by rememberSaveable { mutableStateOf<String?>(null) }
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                viewModel.onImageSelected(pendingCaptureUriString?.let(Uri::parse))
+                viewModel.onImageSelected(pendingCaptureUri?.let(Uri::parse))
             }
-            pendingCaptureUriString = null
+            pendingCaptureUri = null
         }
     )
     val captureVideoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo(),
         onResult = { success ->
             if (success) {
-                viewModel.onImageSelected(pendingCaptureUriString?.let(Uri::parse))
+                viewModel.onImageSelected(pendingCaptureUri?.let(Uri::parse))
             }
-            pendingCaptureUriString = null
+            pendingCaptureUri = null
         }
     )
     var pendingCameraAction by rememberSaveable { mutableStateOf<CameraAction?>(null) }
@@ -95,13 +95,13 @@ fun PostScreen(
 
     fun launchTakePicture() {
         val uri = FileUtil.createImageCaptureUri(context)
-        pendingCaptureUriString = uri.toString()
+        pendingCaptureUri = uri.toString()
         takePictureLauncher.launch(uri)
     }
 
     fun launchCaptureVideo() {
         val uri = FileUtil.createVideoCaptureUri(context)
-        pendingCaptureUriString = uri.toString()
+        pendingCaptureUri = uri.toString()
         captureVideoLauncher.launch(uri)
     }
 
