@@ -1,5 +1,6 @@
 package com.betsudotai.shibari.presentation.ui.screens
 
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -56,7 +57,9 @@ fun MainScreen(parentNavController: NavHostController) {
         NavHost(
             navController = bottomNavController,
             startDestination = Screen.Timeline.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
         ) {
             composable(Screen.Quests.route) { QuestsScreen(
                 onNavigateToPost = { questId ->
