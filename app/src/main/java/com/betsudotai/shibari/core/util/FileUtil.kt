@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 
@@ -22,6 +23,28 @@ object FileUtil {
             // 画像の場合はリサイズ＆圧縮処理を行う
             compressImage(context, uri)
         }
+    }
+
+    fun createImageCaptureUri(context: Context): Uri {
+        return createCaptureUri(context, "jpg")
+    }
+
+    fun createVideoCaptureUri(context: Context): Uri {
+        return createCaptureUri(context, "mp4")
+    }
+
+    private fun createCaptureUri(context: Context, extension: String): Uri {
+        val timestamp = System.currentTimeMillis()
+        val file = File(context.cacheDir, "capture_${timestamp}.$extension")
+        file.parentFile?.mkdirs()
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
     }
 
 
